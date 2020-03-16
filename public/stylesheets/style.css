@@ -1,0 +1,350 @@
+:root {
+    --navbar-height: 64px;
+    --sidebar-width: 280px;
+    --sidebar-padding: 0px;
+    --separator-height: 5px;
+    --primary-color: #008000;
+    --secondary-color: #7fbf7f;
+    --secondary-background-color: #7fa87f;
+    --dark-color: #000c00;
+    --accent-color: #b93441;
+    --accent-color-dark: #7c212d;
+    --light-color: #e5f2e5;
+    --scrollbar-color: #888;
+    --scrollbar-color-dark: #555;
+    /*--dark-color: #002800;*/
+    /*--accent-color: #004000;*/
+    --font-family: Oxanium;
+    --font-size: 20px;
+    --navbar-font-size: 32px;
+    --tools-font-size: 28px;
+    --navbar-padding: 12px;
+    --tools-padding: 14px;
+    --content-padding: 28px;
+    --sidebar-container-heading-font-size: 28px;
+    --sidebar-container-element-font-size: 20px;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, var(--secondary-color), var(--secondary-background-color), var(--secondary-color)) fixed;
+    font-size: var(--font-size);
+    font-family: var(--font-family), sans-serif;
+    /*overflow: hidden;*/
+}
+
+.navbar {
+    height: var(--navbar-height);
+    flex-basis: auto;
+    font-size: var(--navbar-font-size);
+    background-color: var(--dark-color);
+    z-index: 1;
+}
+
+.separator {
+    height: var(--separator-height);
+    flex-basis: auto;
+    background-color: var(--light-color);
+}
+
+.index-content {
+    padding: 12px;
+    margin: 16px;
+    color: var(--dark-color);
+    flex: 1;
+}
+
+.navbar-elem {
+    display: block;
+    color: var(--light-color);
+    text-align: center;
+    padding: var(--navbar-padding);
+    text-decoration: none;
+}
+
+.logo {
+    float: left;
+    text-decoration: none;
+}
+
+.tools {
+    font-size: var(--tools-font-size);
+    padding-top: var(--tools-padding);
+    padding-bottom: var(--tools-padding);
+    float: right;
+    cursor: pointer;
+}
+
+/*TODO: de reparat navbar-ul; de preferat cu flex-box*/
+.dropdown {
+    overflow: hidden;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    width: 160px;
+}
+
+.dropdown-content {
+    margin-top: 12px;
+    display: none;
+    right: 0;
+    min-width: 160px;
+    border-radius: 5px;
+}
+
+.dropdown-content > * {
+    /*background-color: var(--light-color);*/
+    border-radius: 5px;
+    font-size: var(--font-size);
+    float: none;
+    color: var(--dark-color);
+    padding: 8px 12px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-element {
+    background-color: var(--light-color);
+}
+
+.dropdown-element:hover {
+    background-color: var(--scrollbar-color);
+}
+
+.dropdown-logout {
+    background-color: var(--accent-color);
+}
+
+.dropdown-logout:hover {
+    background-color: var(--accent-color-dark);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    padding-top: 10vh;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-header {
+    font-size: var(--navbar-font-size);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    border: solid var(--dark-color) 2px;
+    border-radius: 20px;
+    background-color: var(--primary-color);
+    margin: 5px auto;
+    padding: 32px;
+    width: 50%;
+    font: 20px var(--font-family);
+}
+
+.error {
+    background-color: var(--accent-color);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.bttn {
+    padding: 4px 8px;
+    font: 16px var(--font-family);
+}
+
+.float-right {
+    float: right;
+}
+
+.form-field-column {
+    flex: 1;
+    margin: 12px 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field-row {
+    margin: 12px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.input-field {
+    padding: 12px 20px;
+    margin: 8px 0;
+    font-family: var(--font-family);
+    font-size: 16px;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: var(--dark-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.animate {
+    animation: animatezoom 0.3s;
+}
+
+@keyframes animatezoom {
+    from {
+        transform: scale(0)
+    }
+    to {
+        transform: scale(1)
+    }
+}
+
+.show-mobile {
+    display: none;
+}
+
+@media screen and (max-width: 500px) {
+    .show-mobile {
+        display: block;
+    }
+
+    .hide-mobile {
+        display: none;
+    }
+
+    .modal-content {
+        width: 80%;
+    }
+
+    /*.change-on-mobile {*/
+    /*    flex-direction: column;*/
+    /*    margin: 0;*/
+    /*}*/
+}
+
+@media screen and (max-height: 750px) {
+    .input-field {
+        padding: 4px 8px;
+    }
+
+    .form-field-column {
+        margin: 8px;
+    }
+
+    #register-form.modal-content {
+        padding-top: 16px;
+    }
+}
+
+/*================= DASHBOARD STYLING ===================*/
+
+.dashboard-content {
+    overflow: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    color: var(--dark-color);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);
+    flex-basis: auto;
+    z-index: 1;
+    background-color: var(--dark-color);
+    overflow-x: hidden;
+}
+
+.sidebar-container {
+    padding: 12px;
+    margin: 6px 12px;
+    text-decoration: none;
+    color: var(--light-color);
+    display: block;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-container-heading {
+    font-size: var(--sidebar-container-heading-font-size);
+    margin: 6px 0;
+    text-align: center;
+}
+
+.sidebar-container-element {
+    padding: 4px 8px;
+    font-size: var(--sidebar-container-element-font-size);
+}
+
+.sidebar-container-element:hover {
+    color: var(--secondary-color);
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* TODO: de configurat ascunderea sidebar-ului pe ecranele mai mici*/
+
+.dashboard-workspace {
+    flex: 1;
+    font-size: 28px;
+    padding: 12px;
+    margin: 16px;
+    border-radius: 8px;
+    background-color: var(--dark-color);
+    color: var(--light-color);
+}
+
+@media screen and (max-height: 450px) {
+    /*.sidebar {*/
+    /*    padding-top: 15px;*/
+    /*}*/
+    /*.sidebar-container {*/
+    /*    font-size: 18px;*/
+    /*}*/
+}
+
+/* CUSTOM SCROLLBAR (ONLY ON CHROME AND SAFARI) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-color-dark);
+}

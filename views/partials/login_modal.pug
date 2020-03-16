@@ -1,0 +1,20 @@
+#login-modal.modal
+    form#login-form.modal-content.animate
+        .form-field-row
+            .modal-header= 'Login  '
+                i.fas.fa-sign-in-alt
+            span#close-login-modal.close ×
+        #login-errors
+        .form-field-column
+            label(for='login-email')
+                b Username / Email
+            input#login-email.input-field(type='text', placeholder='Enter Username or Email', name='email')
+        .form-field-column
+            label(for='login-password')
+                b Password
+            input#login-password.input-field(type='password', placeholder='Enter Password', name='password')
+        .form-field-row
+            button#submit-login.bttn(type='button') Login
+            button.bttn(type='button' onclick='closeModal(temp[0].modal); document.getElementById("open-register").click();')
+                | Go to Register
+            //a.float-right(href='/login/forgot') Forgot password?

@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    form#loginform(method='POST' action='/login')
+        .container
+            label(for='username')
+                b Username
+            input#username(type='text', placeholder='Enter Username', name='username', required='true')
+            label(for='password')
+                b Password
+            input#password(type='password', placeholder='Enter Password', name='password', required='')
+            button(type='submit') Login
+            label
+                input(type='checkbox', checked='checked', name='remember' value='Remember me')
+
+        .container(style='background-color:#f1f1f1')
+            button.cancelbtn(type='button') Cancel
+            span
+                a(href='#') Forgot password?

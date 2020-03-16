@@ -1,0 +1,17 @@
+.navbar
+    a.navbar-elem.logo.hide-mobile(href='/') TakeNote
+    a.navbar-elem.logo.show-mobile(href='/') tn
+    //img.hide-mobile(src='/images/favicon.ico' alt='icon')
+    if isAuthenticated
+        .navbar-elem.tools.dropdown= loggedUser.username + ' '
+            i.fa.fa-caret-down
+            .dropdown-content.animate
+                a.dropdown-element(href='/dashboard') Dashboard
+                span.dropdown-logout#logout-button Logout
+    else
+        span#open-login.navbar-elem.tools= 'Login  '
+            i.fas.fa-sign-in-alt
+        include login_modal
+        span#open-register.navbar-elem.tools.hide-mobile= 'Register  '
+            i.fas.fa-user-plus
+        include register_modal

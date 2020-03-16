@@ -1,0 +1,30 @@
+#register-modal.modal
+    form#register-form.modal-content.animate
+        .form-field-row
+            .modal-header= 'Register  '
+                i.fas.fa-user-plus
+            span#close-register-modal.close ×
+        #register-errors
+        .form-field-row
+            .form-field-column
+                label(for='username')
+                    b Username
+                input#username.input-field(type='text', placeholder='Enter Username', name='username')
+            .form-field-column
+                label(for='email')
+                    b Email
+                input#email.input-field(type='text', placeholder='Enter Email', name='email')
+        .form-field-row
+            .form-field-column
+                label(for='password')
+                    b Password
+                input#password.input-field(type='password', placeholder='Enter Password', name='password')
+            .form-field-column
+                label(for='confirm_password')
+                    b Confirm Password
+                input#confirm_password.input-field(type='password', placeholder='Confirm Password', name='confirm_password')
+        .form-field-row
+            button#submit-register.bttn(type='button') Register
+            button.bttn(type='button' onclick='closeModal(temp[1].modal); document.getElementById("open-login").click();')
+                | Go to Login
+// TODO: de aranjat input-urile pe 2 coloane
