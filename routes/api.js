@@ -21,10 +21,10 @@ const fs = require('fs');
 //                 if (note.collaborators.indexOf(res.locals.loggedUser.username) !== -1) {
 //                     // TODO: de autorizat doar modificarile asupra notei la care esti utilizator
 //                     return next();
-//                 } else return res.status(401).json([{
+//                 } else return res.status(401).json({
 //                     status: 401,
 //                     msg: 'Unauthorized.'
-//                 }]);
+//                 });
 //             }
 //         }
 //     }
@@ -46,12 +46,12 @@ async function getAllCollections(req, res, next) {
         });
     }
     const collabNotes = await Note.find({"collaborators": res.locals.loggedUser.username});
-    return res.status(200).json([{
+    return res.status(200).json({
         status: 200,
         msg: 'OK',
         collections: collections,
         collaborations: includeCollaborations === 'true' ? collabNotes : []
-    }]);
+    });
 }
 
 // GET a collection
@@ -60,37 +60,37 @@ router.get('/collection/:collectionTitle', getCollection);
 async function getCollection(req, res, next) {
     const {collectionTitle} = req.params;
     if (!collectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     let collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
 
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     const notes = await Note.find({collectionID: collection._id.toString(), userID: res.locals.loggedUser.userID});
     collection = JSON.parse(JSON.stringify(collection)); // altfel nu pot adauga alte key-uri la obiectul collection
     collection.notes = notes;
 
-    return res.status(200).json([{
+    return res.status(200).json({
         status: 200,
         msg: 'OK',
         collection: collection
-    }]);
+    });
 }
 
 // ADD a collection
@@ -99,17 +99,17 @@ router.post('/collection/add', addCollection);
 async function addCollection(req, res, next) {
     const {collectionTitle} = req.body;
     if (!collectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     const newCollection = new Collection({
@@ -120,24 +120,24 @@ async function addCollection(req, res, next) {
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
 
     if (collection) {
-        return res.status(409).json([{
+        return res.status(409).json({
             status: 409,
             msg: 'A collection with that name already exists.'
-        }]);
+        });
     }
 
     newCollection.save(function (err, collection) {
         if (err) return next(err);
         if (collection) {
-            return res.status(201).json([{
+            return res.status(201).json({
                 status: 201,
                 collection: collection
-            }]);
+            });
         }
-        return res.status(500).json([{
+        return res.status(500).json({
             status: 500,
             msg: 'Could not create collection.'
-        }]);
+        });
     });
 }
 
@@ -147,51 +147,51 @@ router.post('/collection/update', updateCollection);
 async function updateCollection(req, res, next) {
     const {collectionTitle, newCollectionTitle} = req.body;
     if (!collectionTitle || !newCollectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Old collection name or new collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(collectionTitle, newCollectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     const newCollection = await Collection.updateOne({title: collectionTitle, userID: res.locals.loggedUser.userID},
         {title: newCollectionTitle});
 
     if (newCollection.n !== 0) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Collection updated.'
-        }]);
-    } else return res.status(404).json([{
+        });
+    } else return res.status(404).json({
         status: 404,
         msg: 'Could not update collection.'
-    }]);
+    });
 }
 
 // DELETE a collection
 router.post('/collection/delete', deleteCollection);
 
 async function deleteCollection(req, res, next) {
-    const {title: collectionTitle} = req.body;
+    const {collectionTitle} = req.body;
 
     if (!collectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     const collection = await Collection.findOneAndDelete({
@@ -206,16 +206,16 @@ async function deleteCollection(req, res, next) {
             userID: res.locals.loggedUser.userID
         });
 
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Collection deleted.',
             collection: collection
-        }]);
+        });
     } else {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Could not delete collection.'
-        }]);
+        });
     }
 }
 
@@ -225,26 +225,26 @@ router.get('/note/:collectionTitle/:noteTitle', getNote);
 async function getNote(req, res, next) {
     const {noteTitle, collectionTitle} = req.params;
     if (!noteTitle || !collectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Title or collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
 
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     const note = await Note.findOne({
@@ -254,15 +254,15 @@ async function getNote(req, res, next) {
     });
 
     if (note) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'OK',
             note: note
-        }]);
-    } else return res.status(404).json([{
+        });
+    } else return res.status(404).json({
         status: 404,
         msg: 'Could not get note.'
-    }]);
+    });
 }
 
 // ADD a note
@@ -270,26 +270,26 @@ router.post('/note/add', addNote);
 
 async function addNote(req, res, next) {
     const {noteTitle, noteContent, collectionTitle} = req.body;
-    if (!noteTitle || !noteContent || !collectionTitle)
-        return res.status(422).json([{
+    if (!noteTitle || !collectionTitle)
+        return res.status(422).json({
             status: 422,
             msg: 'Title, content or collection name missing.'
-        }]);
+        });
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     // Check if note with that title already exists in the collection
@@ -299,15 +299,15 @@ async function addNote(req, res, next) {
         collectionID: collection._id.toString()
     });
     if (note) {
-        return res.status(409).json([{
+        return res.status(409).json({
             status: 409,
             msg: 'There is already a note with that name in the collection.'
-        }]);
+        });
     }
 
     const newNote = new Note({
         title: noteTitle,
-        content: noteContent,
+        content: noteContent || '',
         userID: res.locals.loggedUser.userID,
         collectionID: collection._id.toString()
     });
@@ -315,15 +315,15 @@ async function addNote(req, res, next) {
     newNote.save(function (err, note) {
         if (err) return next(err);
         if (note) {
-            return res.status(201).json([{
+            return res.status(201).json({
                 status: 201,
                 note: note
-            }]);
+            });
         }
-        return res.status(500).json([{
+        return res.status(500).json({
             status: 500,
             msg: 'Could not create note.'
-        }]);
+        });
     });
 }
 
@@ -333,48 +333,50 @@ router.post('/note/update', updateNote);
 async function updateNote(req, res, next) {
     let {noteTitle, collectionTitle, newNoteTitle, newNoteContent} = req.body;
 
-    if (!noteTitle || !newNoteTitle || !collectionTitle || !newNoteContent) {
-        return res.status(422).json([{
+    if (!noteTitle || !collectionTitle) {
+        return res.status(422).json({
             status: 422,
-            msg: 'Title, new note title, collection name or new note content missing.'
-        }]);
+            msg: 'Input data missing.'
+        });
     }
 
-    if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+    if (!checkRegex(noteTitle, collectionTitle, newNoteTitle)) {
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
+
+    let obj = {
+        edited: Date.now()
+    };
+    if (newNoteTitle) obj.title = newNoteTitle;
+    if (newNoteContent) obj.content = newNoteContent;
 
     const newNote = await Note.updateOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
         collectionID: collection._id.toString()
-    }, {
-        edited: Date.now(),
-        title: newNoteTitle,
-        content: newNoteContent
-    });
+    }, obj);
 
     if (newNote.n !== 0) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Note updated.'
-        }]);
-    } else return res.status(404).json([{
+        });
+    } else return res.status(404).json({
         status: 404,
         msg: 'Could not update note.'
-    }]);
+    });
 
 }
 
@@ -385,26 +387,26 @@ async function deleteNote(req, res, next) {
     let {noteTitle, collectionTitle} = req.body;
 
     if (!noteTitle || !collectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Title or collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     const deletedNote = await Note.findOneAndDelete({
@@ -413,16 +415,16 @@ async function deleteNote(req, res, next) {
         collectionID: collection._id.toString()
     });
     if (deletedNote) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Note deleted.',
             note: deletedNote
-        }]);
+        });
     } else {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Could not delete note.'
-        }]);
+        });
     }
 }
 
@@ -446,12 +448,12 @@ function uploadFile(req, res, next) {
             })
             .catch(function (err) {
                 console.log(err);
-                return res.status(err.http_code).json([err]);
+                return res.status(err.http_code).json(err);
             });
-    } else return res.status(422).json([{
+    } else return res.status(422).json({
         status: 422,
         msg: 'File not found.'
-    }]);
+    });
 }
 
 // TODO: de adaugat o limita pt numarul maxim de atasamente la o nota (~10)
@@ -459,26 +461,26 @@ async function addAttachment(req, res, next) {
     let {noteTitle, collectionTitle} = req.body;
 
     if (!noteTitle || !collectionTitle) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Title or collection name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     // Check if note exists
@@ -488,10 +490,10 @@ async function addAttachment(req, res, next) {
         collectionID: collection._id.toString()
     });
     if (!note) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Could not find note.'
-        }]);
+        });
     }
 
     let oldAttachments = note.attachments;
@@ -507,16 +509,16 @@ async function addAttachment(req, res, next) {
     });
 
     if (newNote) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Attachment added to note.',
             photoURL: res.photoURL
-        }]);
+        });
     } else {
-        return res.status(500).json([{
+        return res.status(500).json({
             status: 500,
             msg: 'Could not add attachment to note.'
-        }]);
+        });
     }
 }
 
@@ -527,26 +529,26 @@ async function deleteAttachment(req, res, next) {
     let {noteTitle, collectionTitle, photoURL} = req.body;
 
     if (!noteTitle || !collectionTitle || !photoURL) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Title, collection name or attachment URL missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     // Check if note exists
@@ -556,10 +558,10 @@ async function deleteAttachment(req, res, next) {
         collectionID: collection._id.toString()
     });
     if (!note) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Could not find note.'
-        }]);
+        });
     }
 
     let oldAttachments = note.attachments;
@@ -567,10 +569,10 @@ async function deleteAttachment(req, res, next) {
     if (index > -1) {
         oldAttachments.splice(index, 1);
     } else {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Attachment not in the list.'
-        }]);
+        });
     }
 
     const newNote = await Note.updateOne({
@@ -583,15 +585,15 @@ async function deleteAttachment(req, res, next) {
     });
 
     if (newNote) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Attachment deleted from note.'
-        }]);
+        });
     } else {
-        return res.status(500).json([{
+        return res.status(500).json({
             status: 500,
             msg: 'Could not delete attachment from note.'
-        }]);
+        });
     }
 }
 
@@ -603,26 +605,26 @@ async function addCollaborator(req, res, next) {
     let {noteTitle, collectionTitle, collaboratorUsername} = req.body;
 
     if (!noteTitle || !collectionTitle || !collaboratorUsername) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Title, collection name or collaborator name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     // Check if note exists
@@ -632,34 +634,34 @@ async function addCollaborator(req, res, next) {
         collectionID: collection._id.toString()
     });
     if (!note) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Could not find note.'
-        }]);
+        });
     }
 
     // Check if collaborator exists
     const user = await User.findOne({username: collaboratorUsername});
     if (!user) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collaborator does not exist.'
-        }]);
+        });
     }
 
     // Check if collaborator already in the list
     if (note.collaborators.indexOf(collaboratorUsername) !== -1) {
-        return res.status(409).json([{
+        return res.status(409).json({
             status: 409,
             msg: 'Collaborator already added.'
-        }]);
+        });
     }
     // Check if collaborator is already the owner
     if (collaboratorUsername === res.locals.loggedUser.username) {
-        return res.status(409).json([{
+        return res.status(409).json({
             status: 409,
             msg: 'Collaborator is already owner.'
-        }]);
+        });
     }
 
     let oldCollaborators = note.collaborators;
@@ -675,15 +677,15 @@ async function addCollaborator(req, res, next) {
     });
 
     if (newNote) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Collaborator added to note.'
-        }]);
+        });
     } else {
-        return res.status(500).json([{
+        return res.status(500).json({
             status: 500,
             msg: 'Could not add collaborator to note.'
-        }]);
+        });
     }
 }
 
@@ -694,26 +696,26 @@ async function deleteCollaborator(req, res, next) {
     let {noteTitle, collectionTitle, collaboratorUsername} = req.body;
 
     if (!noteTitle || !collectionTitle || !collaboratorUsername) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Title, collection name or collaborator name missing.'
-        }]);
+        });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
-        return res.status(422).json([{
+        return res.status(422).json({
             status: 422,
             msg: 'Input data contains unaccepted characters.'
-        }]);
+        });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
     if (!collection) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collection name invalid.'
-        }]);
+        });
     }
 
     // Check if note exists
@@ -723,19 +725,19 @@ async function deleteCollaborator(req, res, next) {
         collectionID: collection._id.toString()
     });
     if (!note) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Could not find note.'
-        }]);
+        });
     }
 
     // Check if collaborator exists
     const user = await User.findOne({username: collaboratorUsername});
     if (!user) {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collaborator does not exist.'
-        }]);
+        });
     }
 
     let oldCollaborators = note.collaborators;
@@ -743,10 +745,10 @@ async function deleteCollaborator(req, res, next) {
     if (index > -1) {
         oldCollaborators.splice(index, 1);
     } else {
-        return res.status(404).json([{
+        return res.status(404).json({
             status: 404,
             msg: 'Collaborator not in the list.'
-        }]);
+        });
     }
 
     const newNote = await Note.updateOne({
@@ -759,15 +761,15 @@ async function deleteCollaborator(req, res, next) {
     });
 
     if (newNote) {
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             msg: 'Collaborator deleted from note.'
-        }]);
+        });
     } else {
-        return res.status(500).json([{
+        return res.status(500).json({
             status: 500,
             msg: 'Could not delete collaborator from note.'
-        }]);
+        });
     }
 }
 

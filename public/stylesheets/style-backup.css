@@ -4,11 +4,11 @@
     --sidebar-padding: 0px;
     --separator-height: 4px;
     --primary-color: #008000;
-    --secondary-color: #7fbf7f;
+    --background-color: #7fbf7f;
     --secondary-background-color: #7fa87f;
     --dark-color: #000c00;
-    --accent-color: #b93441;
-    --accent-color-dark: #7c212d;
+    --danger-color: #b93441;
+    --danger-color-dark: #7c212d;
     --light-color: #e5f2e5;
     /*--dark-color: #002800;*/
     /*--accent-color: #004000;*/
@@ -25,7 +25,7 @@
 
 body {
     margin: 0;
-    background: linear-gradient(to bottom, var(--secondary-color), var(--secondary-background-color), var(--secondary-color)) fixed;
+    background: linear-gradient(to bottom, var(--background-color), var(--secondary-background-color), var(--background-color)) fixed;
     font-size: var(--font-size);
     font-family: var(--font-family), sans-serif;
 }
@@ -111,11 +111,11 @@ body {
 }
 
 .logout {
-    background-color: var(--accent-color);
+    background-color: var(--danger-color);
 }
 
 .logout:hover {
-    background-color: var(--accent-color-dark);
+    background-color: var(--danger-color-dark);
 }
 
 .modal {
@@ -150,7 +150,7 @@ body {
 }
 
 .error {
-    background-color: var(--accent-color);
+    background-color: var(--danger-color);
     padding: 10px;
     border-radius: 5px;
     text-align: center;
@@ -260,7 +260,7 @@ body {
 }
 
 .sidebar-container-element:hover {
-    color: var(--secondary-color);
+    color: var(--background-color);
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 5px;
     cursor: pointer;

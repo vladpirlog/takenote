@@ -4,11 +4,13 @@
     --sidebar-padding: 0px;
     --separator-height: 5px;
     --primary-color: #008000;
-    --secondary-color: #7fbf7f;
-    --secondary-background-color: #7fa87f;
+    --background-color: #7fbf7f;
+    --secondary-color: #404b40;
+    /*--secondary-background-color: #7fa87f;*/
     --dark-color: #000c00;
-    --accent-color: #b93441;
-    --accent-color-dark: #7c212d;
+    --danger-color: #b93441;
+    --danger-color-dark: #7c212d;
+    --success-color: #339AF0;
     --light-color: #e5f2e5;
     --scrollbar-color: #888;
     --scrollbar-color-dark: #555;
@@ -17,9 +19,9 @@
     --font-family: Oxanium;
     --font-size: 20px;
     --navbar-font-size: 32px;
-    --tools-font-size: 28px;
+    --navbar-right-font-size: 28px;
     --navbar-padding: 12px;
-    --tools-padding: 14px;
+    --navbar-right-padding: 14px;
     --content-padding: 28px;
     --sidebar-container-heading-font-size: 28px;
     --sidebar-container-element-font-size: 20px;
@@ -32,7 +34,7 @@ body {
     flex-direction: column;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, var(--secondary-color), var(--secondary-background-color), var(--secondary-color)) fixed;
+    background: var(--background-color);
     font-size: var(--font-size);
     font-family: var(--font-family), sans-serif;
     /*overflow: hidden;*/
@@ -46,9 +48,18 @@ body {
     z-index: 1;
 }
 
+.no-select {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .separator {
     height: var(--separator-height);
-    flex-basis: auto;
+    /*flex-basis: auto;*/
     background-color: var(--light-color);
 }
 
@@ -67,15 +78,15 @@ body {
     text-decoration: none;
 }
 
-.logo {
+.navbar-left {
     float: left;
     text-decoration: none;
 }
 
-.tools {
-    font-size: var(--tools-font-size);
-    padding-top: var(--tools-padding);
-    padding-bottom: var(--tools-padding);
+.navbar-right {
+    font-size: var(--navbar-right-font-size);
+    padding-top: var(--navbar-right-padding);
+    padding-bottom: var(--navbar-right-padding);
     float: right;
     cursor: pointer;
 }
@@ -85,8 +96,10 @@ body {
     overflow: hidden;
     border: none;
     outline: none;
-    padding: 14px 16px;
-    width: 160px;
+    padding: 14px 12px;
+    /*width: 160px;*/
+    text-align: right;
+    user-select: none;
 }
 
 .dropdown-content {
@@ -95,6 +108,7 @@ body {
     right: 0;
     min-width: 160px;
     border-radius: 5px;
+    user-select: none;
 }
 
 .dropdown-content > * {
@@ -107,6 +121,7 @@ body {
     text-decoration: none;
     display: block;
     text-align: center;
+    user-select: none;
 }
 
 .dropdown:hover .dropdown-content {
@@ -122,11 +137,11 @@ body {
 }
 
 .dropdown-logout {
-    background-color: var(--accent-color);
+    background-color: var(--danger-color);
 }
 
 .dropdown-logout:hover {
-    background-color: var(--accent-color-dark);
+    background-color: var(--danger-color-dark);
 }
 
 .modal {
@@ -139,7 +154,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(0, 0, 0);
+    /*background-color: rgb(0, 0, 0);*/
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -154,15 +169,15 @@ body {
     flex-direction: column;
     border: solid var(--dark-color) 2px;
     border-radius: 20px;
-    background-color: var(--primary-color);
-    margin: 5px auto;
-    padding: 32px;
+    background-color: var(--secondary-color);
+    margin: auto;
+    padding: 24px;
     width: 50%;
     font: 20px var(--font-family);
 }
 
 .error {
-    background-color: var(--accent-color);
+    background-color: var(--danger-color);
     padding: 10px;
     border-radius: 5px;
     text-align: center;
@@ -213,54 +228,13 @@ body {
     cursor: pointer;
 }
 
+/* TODO: de animat erorile de autentificare*/
 .animate {
     animation: animatezoom 0.3s;
 }
 
-@keyframes animatezoom {
-    from {
-        transform: scale(0)
-    }
-    to {
-        transform: scale(1)
-    }
-}
-
 .show-mobile {
     display: none;
-}
-
-@media screen and (max-width: 500px) {
-    .show-mobile {
-        display: block;
-    }
-
-    .hide-mobile {
-        display: none;
-    }
-
-    .modal-content {
-        width: 80%;
-    }
-
-    /*.change-on-mobile {*/
-    /*    flex-direction: column;*/
-    /*    margin: 0;*/
-    /*}*/
-}
-
-@media screen and (max-height: 750px) {
-    .input-field {
-        padding: 4px 8px;
-    }
-
-    .form-field-column {
-        margin: 8px;
-    }
-
-    #register-form.modal-content {
-        padding-top: 16px;
-    }
 }
 
 /*================= DASHBOARD STYLING ===================*/
@@ -290,13 +264,33 @@ body {
     color: var(--light-color);
     display: block;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--secondary-color);
 }
 
 .sidebar-container-heading {
     font-size: var(--sidebar-container-heading-font-size);
     margin: 6px 0;
-    text-align: center;
+    /*text-align: center;*/
+}
+
+.sidebar-container-tools {
+    display: inline;
+    float: right;
+    font-size: var(--font-size);
+    cursor: pointer;
+    padding: 5px 0;
+}
+
+.sidebar-container-tools > * {
+    margin: 0 4px;
+}
+
+.sidebar-container-tools .fa-trash:hover {
+    color: var(--danger-color);
+}
+
+.sidebar-container-tools .fa-plus:hover {
+    color: var(--success-color);
 }
 
 .sidebar-container-element {
@@ -305,7 +299,7 @@ body {
 }
 
 .sidebar-container-element:hover {
-    color: var(--secondary-color);
+    color: var(--background-color);
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 5px;
     cursor: pointer;
@@ -319,17 +313,8 @@ body {
     padding: 12px;
     margin: 16px;
     border-radius: 8px;
-    background-color: var(--dark-color);
     color: var(--light-color);
-}
-
-@media screen and (max-height: 450px) {
-    /*.sidebar {*/
-    /*    padding-top: 15px;*/
-    /*}*/
-    /*.sidebar-container {*/
-    /*    font-size: 18px;*/
-    /*}*/
+    background-color: var(--secondary-color);
 }
 
 /* CUSTOM SCROLLBAR (ONLY ON CHROME AND SAFARI) */
@@ -338,13 +323,59 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--light-color);
+    background: var(--secondary-color);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-color);
+    background: var(--light-color);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-color-dark);
+/*::-webkit-scrollbar-thumb:hover {*/
+/*    background: var(--scrollbar-color);*/
+/*}*/
+
+@media screen and (max-width: 500px) {
+    .show-mobile {
+        display: block;
+    }
+
+    .hide-mobile {
+        display: none;
+    }
+
+    .modal-content {
+        width: 80%;
+    }
+
+    /*.change-on-mobile {*/
+    /*    flex-direction: column;*/
+    /*    margin: 0;*/
+    /*}*/
+}
+
+@media screen and (max-height: 700px) {
+    .input-field {
+        padding: 4px 8px;
+    }
+
+    #register-modal .form-field-column {
+        margin: 8px;
+    }
+
+    #register-modal .form-field-row {
+        margin: 0;
+    }
+
+    #register-modal {
+        padding-top: 6vh;
+    }
+}
+
+@keyframes animatezoom {
+    from {
+        transform: scale(0)
+    }
+    to {
+        transform: scale(1)
+    }
 }

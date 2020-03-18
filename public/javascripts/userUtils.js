@@ -11,13 +11,13 @@ if (registerModal) registerModal.onkeydown = function (ev) {
 };
 
 function register() {
-    const xhr = new XMLHttpRequest();
     const form = new FormData(document.getElementById('register-form'));
-    xhr.open('POST', window.location.origin + '/register');
-    xhr.onload = function () {
-        responseHandler(registerErrors, xhr);
-    };
-    xhr.send(form);
+    axios.post('/register', form)
+        .then(function (response) {
+            responseHandler(registerErrors, response);
+        }).catch(function (err) {
+        responseHandler(registerErrors, err.response);
+    });
 }
 
 
@@ -28,22 +28,22 @@ if (loginModal) loginModal.onkeydown = function (ev) {
 };
 
 function login() {
-    const xhr = new XMLHttpRequest();
     const form = new FormData(document.getElementById('login-form'));
-    xhr.open('POST', window.location.origin + '/login');
-    xhr.onload = function () {
-        responseHandler(loginErrors, xhr);
-    };
-    xhr.send(form);
+    axios.post('/login', form)
+        .then(function (response) {
+            responseHandler(loginErrors, response);
+        }).catch(function (err) {
+        if (err.response) responseHandler(loginErrors, err.response);
+    });
 }
 
-function responseHandler(errors, xhr) {
-    if (xhr.status < 300) {
-        window.location.pathname = JSON.parse(xhr.response)[0].redirectPath;
-    } else if (xhr.status >= 400) {
+function responseHandler(errors, response) {
+    if (response.status < 300) {
+        window.location.pathname = response.data.redirectPath;
+    } else if (response.status >= 400) {
         if (!displayErrors) {
             displayErrors = true;
-            for (let err of JSON.parse(xhr.response)) {
+            for (let err of response.data.errors) {
                 let elem = document.createElement('p');
                 elem.classList.add('error');
                 elem.textContent = err.msg;
@@ -59,15 +59,16 @@ function responseHandler(errors, xhr) {
 
 let logoutButton = document.getElementById('logout-button');
 if (logoutButton) logoutButton.onclick = function () {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', window.location.origin + '/logout');
-    xhr.onload = function () {
-        const res = JSON.parse(xhr.response)[0];
-        if (xhr.status < 300) {
-            window.location.pathname = res.redirectPath;
-        } else if (xhr.status >= 400) {
-            alert(res.msg);
+    axios.post('/logout')
+        .then(function (response) {
+            window.location.pathname = response.data.redirectPath;
+        }).catch(function (err) {
+        if (err.response.status >= 400) {
+            let str = '';
+            for (let e of err.response.data.errors) {
+                str += e.msg + ' ';
+            }
+            alert(str);
         }
-    };
-    xhr.send();
+    });
 };

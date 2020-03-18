@@ -8,16 +8,16 @@ module.exports = function (req, res, next) {
             if (decoded) {
                 next();
             } else {
-                return res.status(401).json([{
+                return res.status(401).json({
                     status: 401,
                     msg: 'Unauthorized.'
-                }]);
+                });
             }
         });
     } else {
-        return res.status(401).json([{
+        return res.status(401).json({
             status: 401,
             msg: 'Unauthorized.'
-        }]);
+        });
     }
 };

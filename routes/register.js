@@ -53,7 +53,7 @@ function checkSanitized(req, res, next) {
     }
 
     if (errors.length > 0) {
-        return res.status(422).json(errors);
+        return res.status(422).json({errors: errors});
     }
     return next();
 }
@@ -61,7 +61,7 @@ function checkSanitized(req, res, next) {
 function checkValid(req, res, next) {
     const errors = validationResult(req).array();
     if (errors.length > 0) {
-        return res.status(422).json(errors);
+        return res.status(422).json({errors: errors});
     }
     return next();
 }
@@ -74,11 +74,13 @@ function checkUnique(req, res, next) {
             return next(err);
         }
         if (user) {
-            return res.status(422).json([{
-                status: 422,
-                location: 'body',
-                msg: 'User already exists.'
-            }]);
+            return res.status(422).json({
+                errors: [{
+                    status: 422,
+                    location: 'body',
+                    msg: 'User already exists.'
+                }]
+            });
         }
         return next();
     });
@@ -107,13 +109,15 @@ function createUser(req, res, next) {
                 msg: `User created successfully.`,
                 user: user
             };
-            return res.status(201).json([notif]);
+            return res.status(201).json(notif);
         }
-        return res.status(500).json([{
-            status: 500,
-            msg: 'Could not create user.',
-            location: 'body'
-        }]);
+        return res.status(500).json({
+            errors: [{
+                status: 500,
+                msg: 'Could not create user.',
+                location: 'body'
+            }]
+        });
     })
 }
 

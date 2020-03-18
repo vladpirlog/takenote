@@ -5,17 +5,17 @@ const router = express.Router();
 router.post('/', function (req, res, next) {
     if (req.cookies.jwt_auth) {
         res.clearCookie('jwt_auth');
-        return res.status(200).json([{
+        return res.status(200).json({
             status: 200,
             redirectPath: '/',
             msg: 'User logged out.'
-        }]);
-    } else {
-        return res.status(404).json([{
+        });
+    } else return res.status(404).json({
+        errors: [{
             status: 404,
             msg: 'Could not log out.'
-        }]);
-    }
+        }]
+    });
 });
 
 module.exports = router;
