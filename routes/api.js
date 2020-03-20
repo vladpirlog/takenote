@@ -338,7 +338,7 @@ router.post('/note/update', updateNote);
 async function updateNote(req, res, next) {
     let {noteTitle, collectionTitle, newNoteTitle, newNoteContent} = req.body;
 
-    if (!noteTitle || !collectionTitle || !newNoteTitle || !newNoteContent) {
+    if (!noteTitle || !collectionTitle || !newNoteTitle) {
         return res.status(422).json({
             status: 422,
             msg: 'Input data missing.'

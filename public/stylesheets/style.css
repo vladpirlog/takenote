@@ -187,6 +187,7 @@ body {
 .bttn {
     padding: 4px 8px;
     font: 16px var(--font-family);
+    border-radius: 5px;
 }
 
 .float-right {
@@ -326,14 +327,32 @@ body {
 
 .dashboard-workspace-tools {
     flex-basis: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: fit-content;
+}
+
+.note-title-field {
+    height: auto;
+    line-height: inherit;
+    flex-basis: 40%;
+    font-size: 32px;
+    font-family: inherit;
+    border: 4px solid var(--light-color);
+    border-radius: 5px;
+    outline: none;
+    resize: none;
+    margin: 0;
+    padding: 6px 4px;
+/*    TODO: de limitat lungimea titlului*/
 }
 
 .save-button {
-    display: inline;
     float: right;
-    padding: 8px;
+    padding: 8px 20px;
+    font-weight: bold;
     cursor: pointer;
-    margin: auto;
     border-radius: 5px;
     background-color: var(--success-color);
 }

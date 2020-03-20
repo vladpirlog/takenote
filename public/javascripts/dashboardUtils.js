@@ -1,8 +1,8 @@
 const sidebar = document.getElementsByClassName('sidebar')[0];
 const dashbordContent = document.getElementsByClassName('dashboard-workspace')[0];
 const dashBoardWorkspaceTextarea = document.getElementsByClassName('dashboard-workspace-textarea')[0];
-const saveButton = document.getElementsByClassName('.save-button')[0];
-let noteTitleField;
+const saveButton = document.getElementsByClassName('save-button')[0];
+const noteTitleField = document.getElementsByClassName('note-title-field')[0];
 
 // ============================= FUNCTIONS FOR FETCHING DATA/INTERACTING WITH THE BACKEND ===========================
 
@@ -45,14 +45,14 @@ function addNote(ev) {
 
 // UPDATE a note when the save button is clicked
 function updateNote() {
-    if (noteTitleField.value === "") {
+    if (noteTitleField.textContent === "") {
         alert('Note title cannot be empty.');
         return;
     }
     let form = new FormData();
     form.append('noteTitle', JSON.parse(sessionStorage.getItem('currentNote')).title);
     form.append('collectionTitle', JSON.parse(sessionStorage.getItem('currentNote')).collectionTitle);
-    form.append('newNoteTitle', noteTitleField.value);
+    form.append('newNoteTitle', noteTitleField.textContent);
     form.append('newNoteContent', dashBoardWorkspaceTextarea.value || "");
     axios.post('/api/note/update', form)
         .then(function (response) {
@@ -90,6 +90,7 @@ axios.get('/api/user/collections?includeCollaborations=true')
 function displayNote(response) {
     sessionStorage.setItem('currentNote', JSON.stringify(response.data.note));
     dashBoardWorkspaceTextarea.value = JSON.parse(sessionStorage.getItem('currentNote')).content;
+    noteTitleField.textContent = JSON.parse(sessionStorage.getItem('currentNote')).title;
 }
 
 function initializeDashboard(response) {
