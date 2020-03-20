@@ -17,6 +17,10 @@ const NoteSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    collectionTitle: {
+        type: String,
+        required: true
+    },
     collectionID: {
         type: String,
         required: true

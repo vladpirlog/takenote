@@ -310,11 +310,41 @@ body {
 .dashboard-workspace {
     flex: 1;
     font-size: 28px;
-    padding: 12px;
     margin: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.dashboard-workspace * {
     border-radius: 8px;
+    padding: 12px;
+    margin: 6px 12px;
     color: var(--light-color);
     background-color: var(--secondary-color);
+}
+
+.dashboard-workspace-tools {
+    flex-basis: 10%;
+}
+
+.save-button {
+    display: inline;
+    float: right;
+    padding: 8px;
+    cursor: pointer;
+    margin: auto;
+    border-radius: 5px;
+    background-color: var(--success-color);
+}
+
+.dashboard-workspace-textarea {
+    flex: 1;
+    font-size: inherit;
+    font-family: inherit;
+    border: none;
+    outline: none;
+    resize: none;
 }
 
 /* CUSTOM SCROLLBAR (ONLY ON CHROME AND SAFARI) */

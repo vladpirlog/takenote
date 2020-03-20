@@ -45,13 +45,16 @@ async function getAllCollections(req, res, next) {
             userID: res.locals.loggedUser.userID
         });
     }
-    const collabNotes = await Note.find({"collaborators": res.locals.loggedUser.username});
-    return res.status(200).json({
+
+    let response = {
         status: 200,
         msg: 'OK',
-        collections: collections,
-        collaborations: includeCollaborations === 'true' ? collabNotes : []
-    });
+        collections: collections
+    };
+    if (includeCollaborations) {
+        response.collaborations = await Note.find({"collaborators": res.locals.loggedUser.username});
+    }
+    return res.status(200).json(response);
 }
 
 // GET a collection
@@ -309,6 +312,7 @@ async function addNote(req, res, next) {
         title: noteTitle,
         content: noteContent || '',
         userID: res.locals.loggedUser.userID,
+        collectionTitle: collectionTitle,
         collectionID: collection._id.toString()
     });
 
@@ -317,6 +321,7 @@ async function addNote(req, res, next) {
         if (note) {
             return res.status(201).json({
                 status: 201,
+                msg: 'Note created.',
                 note: note
             });
         }
@@ -333,7 +338,7 @@ router.post('/note/update', updateNote);
 async function updateNote(req, res, next) {
     let {noteTitle, collectionTitle, newNoteTitle, newNoteContent} = req.body;
 
-    if (!noteTitle || !collectionTitle) {
+    if (!noteTitle || !collectionTitle || !newNoteTitle || !newNoteContent) {
         return res.status(422).json({
             status: 422,
             msg: 'Input data missing.'
@@ -356,17 +361,15 @@ async function updateNote(req, res, next) {
         });
     }
 
-    let obj = {
-        edited: Date.now()
-    };
-    if (newNoteTitle) obj.title = newNoteTitle;
-    if (newNoteContent) obj.content = newNoteContent;
-
     const newNote = await Note.updateOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
         collectionID: collection._id.toString()
-    }, obj);
+    }, {
+        edited: Date.now(),
+        content: newNoteContent,
+        title: newNoteTitle
+    });
 
     if (newNote.n !== 0) {
         return res.status(200).json({
@@ -774,7 +777,7 @@ async function deleteCollaborator(req, res, next) {
 }
 
 function checkRegex() {
-    const regex = /^[\s\w.\-,]*$/;
+    const regex = /^[\s\w.\-,()]*$/;
     for (let i = 0; i < arguments.length; i++) {
         if (!regex.test(arguments[i])) return false;
     }
