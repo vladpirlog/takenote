@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-// const checkAuth = require('../config/checkAuth');
 const jwt = require('jsonwebtoken');
 
 // GET dashboard page
@@ -14,9 +13,9 @@ function checkIfLoggedIn(req, res, next) {
             if (err) return next(err);
             if (decoded) {
                 next();
-            } else return next(new Error('Unauthorized.'));
+            } else return res.redirect('/');
         });
-    } else return next(new Error('Unauthorized.'));
+    } else return res.redirect('/');
 }
 
 // function getData(req, res, next) {

@@ -62,6 +62,7 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 // }));
 
 app.use(compression());
+// Initialize res.locals.isAuthenticated and res.locals.loggedUser
 app.use(function (req, res, next) {
     if (req.cookies.jwt_auth) {
         jwt.verify(req.cookies.jwt_auth, process.env.JWT_SECRET, function (err, decoded) {

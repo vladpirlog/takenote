@@ -6,16 +6,15 @@
     --primary-color: #008000;
     --background-color: #7fbf7f;
     --secondary-color: #404b40;
-    /*--secondary-background-color: #7fa87f;*/
     --dark-color: #000c00;
     --danger-color: #b93441;
     --danger-color-dark: #7c212d;
     --success-color: #339AF0;
+    --success-color-dark: #27629c;
+    --info-color: #baa300;
     --light-color: #e5f2e5;
     --scrollbar-color: #888;
     --scrollbar-color-dark: #555;
-    /*--dark-color: #002800;*/
-    /*--accent-color: #004000;*/
     --font-family: Oxanium;
     --font-size: 20px;
     --navbar-font-size: 32px;
@@ -231,7 +230,7 @@ body {
 
 /* TODO: de animat erorile de autentificare*/
 .animate {
-    animation: animatezoom 0.3s;
+    animation: animatezoom 0.3s forwards;
 }
 
 .show-mobile {
@@ -306,6 +305,11 @@ body {
     cursor: pointer;
 }
 
+.active-note, .active-note:hover {
+    border-radius: 5px;
+    background-color: var(--dark-color);
+}
+
 /* TODO: de configurat ascunderea sidebar-ului pe ecranele mai mici*/
 
 .dashboard-workspace {
@@ -317,7 +321,7 @@ body {
     justify-content: space-between;
 }
 
-.dashboard-workspace * {
+.dashboard-workspace > * {
     border-radius: 8px;
     padding: 12px;
     margin: 6px 12px;
@@ -330,40 +334,82 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    height: fit-content;
 }
 
 .note-title-field {
-    height: auto;
-    line-height: inherit;
     flex-basis: 40%;
     font-size: 32px;
     font-family: inherit;
-    border: 4px solid var(--light-color);
-    border-radius: 5px;
-    outline: none;
-    resize: none;
     margin: 0;
-    padding: 6px 4px;
-/*    TODO: de limitat lungimea titlului*/
+    outline: none;
+    padding: 6px;
+    max-width: 50%;
+    /*    TODO: de limitat lungimea titlului*/
+}
+
+.dashboard-workspace-buttons {
+    float: right;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.dashboard-workspace-buttons > *{
+    margin: 0 12px;
+    cursor: pointer;
+    align-self: center;
+}
+
+.dashboard-workspace-buttons .fa-trash, .dashboard-workspace-buttons .fa-paperclip {
+    font-size: 32px;
+}
+
+.dashboard-workspace-buttons .fa-paperclip:hover {
+    color: var(--success-color);
+}
+
+.dashboard-workspace-buttons .fa-trash:hover {
+    color: var(--danger-color);
 }
 
 .save-button {
-    float: right;
+    display: inline;
     padding: 8px 20px;
     font-weight: bold;
-    cursor: pointer;
     border-radius: 5px;
     background-color: var(--success-color);
 }
 
+.save-button:hover {
+    background-color: var(--success-color-dark);
+}
+
 .dashboard-workspace-textarea {
+    padding: 10px;
     flex: 1;
     font-size: inherit;
     font-family: inherit;
     border: none;
     outline: none;
     resize: none;
+    overflow: scroll;
+}
+
+/*TODO: de facut background-ul la textarea*/
+/*.dashboard-workspace-textarea-background {*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    left: 50%;*/
+/*}*/
+
+.animate-focus {
+    border: 4px var(--scrollbar-color-dark) solid;
+    border-radius: 2px;
+}
+
+.animate-focus:focus
+{
+    animation: animatefocus 0.7s forwards;
 }
 
 /* CUSTOM SCROLLBAR (ONLY ON CHROME AND SAFARI) */
@@ -426,5 +472,12 @@ body {
     }
     to {
         transform: scale(1)
+    }
+}
+
+@keyframes animatefocus {
+    to {
+        border-radius: 5px;
+        border-color: var(--light-color);
     }
 }
