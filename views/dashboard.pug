@@ -9,6 +9,7 @@ block content
             .dashboard-workspace-tools
                 .note-title-field.animate-focus(contenteditable='true' data-placeholder='Write the title here...')
                 .dashboard-workspace-buttons
+                    i.fas.fa-share-alt(onclick='shareNote();')
                     i.fas.fa-copy(onclick='copyToClipboard();')
                     i.fas.fa-paperclip(onclick='viewAttachments();')
                     i.fas.fa-trash(onclick='deleteNote();')

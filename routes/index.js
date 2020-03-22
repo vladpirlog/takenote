@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Note = require('../models/Note');
+// const Link = require('../')
 const jwt = require('jsonwebtoken');
 
 /* GET home page. */
@@ -39,5 +40,10 @@ function checkNote(req, res, next) {
         return next(new Error('Page not found.'));
     });
 }
+
+// GET note page shared with unique link
+router.get('/:link', function (req, res, next) {
+
+});
 
 module.exports = router;

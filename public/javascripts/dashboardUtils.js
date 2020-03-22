@@ -24,10 +24,7 @@ function getNote(ev) {
             displayNote(response.data.note);
         })
         .catch(function (err) {
-            console.log(
-                err.response.status || "Status unknown.",
-                err.response.data || "There was a problem."
-            );
+            alert(err.response.data.msg || "There was a problem.");
         });
 }
 
@@ -63,7 +60,7 @@ function addNote(ev) {
             displayNote(response.data.note);
         })
         .catch(function (err) {
-            console.log(err.response.data.msg || "There was a problem.");
+            alert(err.response.data.msg || "There was a problem.");
         });
 }
 
@@ -74,7 +71,7 @@ function updateNote() {
         return;
     }
     saveToLoading(true);
-    let form = new FormData();
+    const form = new FormData();
     if (sessionStorage.getItem("currentNote")) {
         // current note updates
         form.append(
@@ -184,14 +181,14 @@ function addCollection() {
             addContainer(response.data.collection);
         })
         .catch(function (err) {
-            console.log(err.response.data.msg || "There was a problem.");
+            alert(err.response.data.msg || "There was a problem.");
         });
 }
 
 // DELETE an entire collection, including the notes inside
 function deleteCollection(ev) {
     const collectionTitle = ev.parentElement.parentElement.textContent.trim();
-    let form = new FormData();
+    const form = new FormData();
     form.append("collectionTitle", collectionTitle);
     axios
         .post("/api/collection/delete", form)
@@ -202,7 +199,21 @@ function deleteCollection(ev) {
             }
         })
         .catch(function (err) {
-            console.log(err.response.data.msg || "There was a problem.");
+            alert(err.response.data.msg || "There was a problem.");
+        });
+}
+
+function shareNote() {
+    const note = JSON.parse(sessionStorage.getItem('currentNote'));
+    const form = new FormData();
+    form.append('noteTitle', note.title);
+    form.append('collectionTitle', note.collectionTitle);
+    axios.post('/api/note/share', form)
+        .then(function (response) {
+            alert(`The share link is ${window.location.origin}/${response.data.link.path}`);
+        })
+        .catch(function (err) {
+            alert(err.response.data.msg || "There was a problem.");
         });
 }
 
@@ -214,7 +225,6 @@ axios
     .get("/api/user/collections?includeCollaborations=true")
     .then(initializeDashboard)
     .catch(function (err) {
-        console.log(err);
         alert(err.response.data.msg || "There was a problem.");
     });
 
@@ -333,18 +343,19 @@ function saveToLoading(val) {
 }
 
 function copyToClipboard() {
-    if(document.body.createTextRange) {
+    if (document.body.createTextRange) {
         let range = document.body.createTextRange();
         range.moveToElementText(dashBoardWorkspaceTextarea);
         range.select();
         document.execCommand("Copy");
-    }
-    else if(window.getSelection) {
+        range = null;
+    } else if (window.getSelection) {
         let selection = window.getSelection();
         let range = document.createRange();
         range.selectNodeContents(dashBoardWorkspaceTextarea);
         selection.removeAllRanges();
         selection.addRange(range);
         document.execCommand("Copy");
+        selection.removeAllRanges();
     }
 }

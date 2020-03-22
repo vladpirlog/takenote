@@ -3,8 +3,10 @@ const router = express.Router();
 const Note = require("../models/Note");
 const Collection = require("../models/Collection");
 const User = require("../models/User");
+const Link = require("../models/Link");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+const randomString = require('randomstring');
 // TODO: de adaugat functii pt a reduce codul duplicat
 // TODO: de adaugat limita pt lungimea titlului
 
@@ -69,7 +71,7 @@ async function getCollection(req, res, next) {
     if (!collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -114,7 +116,7 @@ async function addCollection(req, res, next) {
     if (!collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -166,7 +168,7 @@ async function updateCollection(req, res, next) {
     if (!collectionTitle || !newCollectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Old collection name or new collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -204,7 +206,7 @@ async function deleteCollection(req, res, next) {
     if (!collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -248,7 +250,7 @@ async function getNote(req, res, next) {
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Title or collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -298,7 +300,7 @@ async function addNote(req, res, next) {
     if (!noteTitle || !collectionTitle)
         return res.status(422).json({
             status: 422,
-            msg: "Title, content or collection name missing."
+            msg: "Input data missing."
         });
 
     if (!checkRegex(noteTitle, collectionTitle)) {
@@ -437,7 +439,7 @@ async function deleteNote(req, res, next) {
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Title or collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -516,7 +518,7 @@ async function addAttachment(req, res, next) {
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Title or collection name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -591,7 +593,7 @@ async function deleteAttachment(req, res, next) {
     if (!noteTitle || !collectionTitle || !photoURL) {
         return res.status(422).json({
             status: 422,
-            msg: "Title, collection name or attachment URL missing."
+            msg: "Input data missing."
         });
     }
 
@@ -674,7 +676,7 @@ async function addCollaborator(req, res, next) {
     if (!noteTitle || !collectionTitle || !collaboratorUsername) {
         return res.status(422).json({
             status: 422,
-            msg: "Title, collection name or collaborator name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -772,7 +774,7 @@ async function deleteCollaborator(req, res, next) {
     if (!noteTitle || !collectionTitle || !collaboratorUsername) {
         return res.status(422).json({
             status: 422,
-            msg: "Title, collection name or collaborator name missing."
+            msg: "Input data missing."
         });
     }
 
@@ -852,6 +854,74 @@ async function deleteCollaborator(req, res, next) {
             msg: "Could not delete collaborator from note."
         });
     }
+}
+
+router.post("/note/share", getShareLink);
+
+async function getShareLink(req, res, next) {
+    const {noteTitle, collectionTitle} = req.body;
+
+    if (!noteTitle || !collectionTitle) {
+        return res.status(422).json({
+            status: 422,
+            msg: "Input data missing."
+        });
+    }
+
+    if (!checkRegex(noteTitle, collectionTitle)) {
+        return res.status(422).json({
+            status: 422,
+            msg: "Input data contains unaccepted characters."
+        });
+    }
+
+    // Check if collection exists
+    const collection = await Collection.findOne({
+        title: collectionTitle,
+        userID: res.locals.loggedUser.userID
+    });
+    if (!collection) {
+        return res.status(404).json({
+            status: 404,
+            msg: "Collection name invalid."
+        });
+    }
+
+    // Check if note exists
+    const note = await Note.findOne({
+        title: noteTitle,
+        userID: res.locals.loggedUser.userID,
+        collectionID: collection._id.toString()
+    });
+    if (!note) {
+        return res.status(404).json({
+            status: 404,
+            msg: "Could not find note."
+        });
+    }
+
+    const str = randomString.generate(20);
+    const newLink = new Link({
+        path: str,
+        noteID: note._id.toString(),
+        collectionID: collection._id.toString(),
+        userID: res.locals.loggedUser.userID
+    });
+    // TODO: de vazut cum sa implementez link-urile pt share
+    newLink.save(function (err, link) {
+        if (err) return next(err);
+        if (link) {
+            return res.status(201).json({
+                status: 201,
+                msg: 'Link created.',
+                link: link
+            });
+        }
+        return res.status(500).json({
+            status: 500,
+            msg: "Could not create link."
+        });
+    });
 }
 
 function checkRegex() {

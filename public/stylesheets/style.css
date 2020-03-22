@@ -391,11 +391,12 @@ body {
 }
 
 .dashboard-workspace-buttons .fa-trash, .dashboard-workspace-buttons .fa-paperclip,
-.dashboard-workspace-buttons .fa-copy {
+.dashboard-workspace-buttons .fa-copy, .dashboard-workspace-buttons .fa-share-alt {
     font-size: 32px;
 }
 
-.dashboard-workspace-buttons .fa-paperclip:hover, .dashboard-workspace-buttons .fa-copy:hover {
+.dashboard-workspace-buttons .fa-paperclip:hover, .dashboard-workspace-buttons .fa-copy:hover,
+.dashboard-workspace-buttons .fa-share-alt:hover{
     color: var(--success-color);
 }
 
