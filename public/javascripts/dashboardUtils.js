@@ -11,7 +11,7 @@ const noteTitleField = document.getElementsByClassName("note-title-field")[0];
 // ============================= FUNCTIONS FOR FETCHING DATA/INTERACTING WITH THE BACKEND ===========================
 
 // GET note content
-function getNoteContent(ev) {
+function getNote(ev) {
     const noteTitle = ev.target.textContent;
     const collectionTitle = ev.target.parentElement
         .querySelector(".sidebar-container-heading")
@@ -47,8 +47,7 @@ function addNote(ev) {
                     .slice(
                         1 + elem.textContent.trim().indexOf("("),
                         elem.textContent.trim().indexOf(")")
-                    )
-            );
+                    ), 10);
             if (newNoteIndex < x) {
                 newNoteIndex = x;
             }
@@ -121,6 +120,7 @@ function updateNote() {
             });
         } else {
             alert('No collection to add note to.');
+            saveToLoading(false);
         }
     }
 }
@@ -146,7 +146,7 @@ function deleteNote() {
                     }
                 });
                 deleteNoteFromContainer(response.data.note, container);
-                sessionStorage.clear();
+                sessionStorage.removeItem('currentNote');
                 resetDashboard();
                 modifyActiveNote(null);
             })
@@ -158,6 +158,36 @@ function deleteNote() {
     }
 }
 
+// ADD an empty collection
+function addCollection() {
+    // Set the title of the new note to be "New Note(<number>)"
+    let newColIndex = 0;
+    for (let elem of document.querySelectorAll(".sidebar-container-heading")) {
+        if (elem.textContent.trim().match(/^New Col\([0-9]*\)$/)) {
+            let x = parseInt(
+                elem.textContent
+                    .trim()
+                    .slice(
+                        1 + elem.textContent.trim().indexOf("("),
+                        elem.textContent.trim().indexOf(")")
+                    ), 10);
+            if (newColIndex < x) {
+                newColIndex = x;
+            }
+        }
+    }
+    const form = new FormData();
+    form.append("collectionTitle", `New Col(${newColIndex + 1})`);
+    axios
+        .post("/api/collection/add", form)
+        .then(function (response) {
+            addContainer(response.data.collection);
+        })
+        .catch(function (err) {
+            console.log(err.response.data.msg || "There was a problem.");
+        });
+}
+
 // DELETE an entire collection, including the notes inside
 function deleteCollection(ev) {
     const collectionTitle = ev.parentElement.parentElement.textContent.trim();
@@ -166,8 +196,10 @@ function deleteCollection(ev) {
     axios
         .post("/api/collection/delete", form)
         .then(function (response) {
-            //TODO: de adaugat animatia stergerii colectiei
-            ev.parentElement.parentElement.parentElement.style.display = "none";
+            deleteContainer(response.data.collection);
+            if (JSON.parse(sessionStorage.getItem('currentNote')).collectionTitle === collectionTitle) {
+                sessionStorage.removeItem('currentNote');
+            }
         })
         .catch(function (err) {
             console.log(err.response.data.msg || "There was a problem.");
@@ -196,33 +228,60 @@ function displayNote(note) {
 
 function initializeDashboard(response) {
     for (let col of response.data.collections) {
-        let container = document.createElement("div");
-        container.classList.add("sidebar-container");
-        container.classList.add("animate");
+        addContainer(col);
+    }
+}
 
-        let containerHeading = document.createElement("div");
-        containerHeading.classList.add("sidebar-container-heading");
-        containerHeading.textContent = col.title;
-        let containerTools = document.createElement("div");
-        containerTools.classList.add("sidebar-container-tools");
-        containerTools.innerHTML =
-            '<i class="fas fa-plus" onclick="addNote(this)"></i>' +
-            '<i class="fas fa-trash" onclick="deleteCollection(this)"></i>';
-        containerHeading.appendChild(containerTools);
-        container.appendChild(containerHeading);
+function addContainer(collection) {
+    let container = document.createElement("div");
+    container.classList.add("sidebar-container");
+    container.classList.add("animate");
 
-        for (let note of col.notes) {
+    let containerHeading = document.createElement("div");
+    containerHeading.classList.add("sidebar-container-heading");
+    containerHeading.textContent = collection.title;
+
+    let containerTools = document.createElement("div");
+    containerTools.classList.add("sidebar-container-tools");
+    containerTools.innerHTML =
+        '<i class="fas fa-plus" onclick="addNote(this)"></i>' +
+        '<i class="fas fa-trash" onclick="deleteCollection(this)"></i>';
+    containerHeading.appendChild(containerTools);
+    container.appendChild(containerHeading);
+    if (collection.notes) {
+        for (let note of collection.notes) {
             addNoteToContainer(note, container);
         }
-        sidebar.appendChild(container);
+    }
+    sidebar.appendChild(container);
+    sidebar.scrollTop = sidebar.scrollHeight;
+    return container;
+}
+
+function deleteContainer(collection) {
+    const containerHeadings = document.querySelectorAll('.sidebar-container-heading');
+    let toDelete;
+    for (let h of containerHeadings) {
+        if (h.textContent.trim() === collection.title) {
+            toDelete = h.parentElement;
+            break;
+        }
+    }
+
+    if (toDelete) {
+        toDelete.classList.add('animate-out');
+        setTimeout(() => {
+            toDelete.parentElement.removeChild(toDelete);
+        }, 300);
     }
 }
 
 function addNoteToContainer(note, container) {
     let containerElement = document.createElement("div");
     containerElement.classList.add("sidebar-container-element");
+    containerElement.classList.add("animate");
     containerElement.textContent = note.title;
-    containerElement.onclick = getNoteContent;
+    containerElement.onclick = getNote;
     container.appendChild(containerElement);
     return containerElement;
 }
@@ -236,14 +295,19 @@ function deleteNoteFromContainer(note, container) {
             break;
         }
     }
-    toDelete.parentElement.removeChild(toDelete);
+    if (toDelete) {
+        toDelete.classList.add('animate-out');
+        setTimeout(() => {
+            toDelete.parentElement.removeChild(toDelete);
+        }, 300);
+    }
 }
 
 function modifyActiveNote(containerElement) {
     const actives = document.querySelectorAll('.active-note');
     if (actives.length > 0) actives.forEach((elem) => {
         elem.classList.remove('active-note');
-        elem.onclick = getNoteContent;
+        elem.onclick = getNote;
     });
     if (containerElement) {
         containerElement.classList.add('active-note');
@@ -265,5 +329,22 @@ function saveToLoading(val) {
         saveButton.textContent = 'SAVE';
         saveButton.style.backgroundColor = 'var(--success-color)';
         saveButton.onclick = updateNote;
+    }
+}
+
+function copyToClipboard() {
+    if(document.body.createTextRange) {
+        let range = document.body.createTextRange();
+        range.moveToElementText(dashBoardWorkspaceTextarea);
+        range.select();
+        document.execCommand("Copy");
+    }
+    else if(window.getSelection) {
+        let selection = window.getSelection();
+        let range = document.createRange();
+        range.selectNodeContents(dashBoardWorkspaceTextarea);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("Copy");
     }
 }

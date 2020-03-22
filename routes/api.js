@@ -147,6 +147,7 @@ async function addCollection(req, res, next) {
         if (collection) {
             return res.status(201).json({
                 status: 201,
+                msg: 'Collection created.',
                 collection: collection
             });
         }

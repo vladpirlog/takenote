@@ -239,6 +239,10 @@ body {
     animation: animatezoom 0.3s forwards;
 }
 
+.animate-out {
+    animation: animatezoomout 0.3s forwards;
+}
+
 .show-mobile {
     display: none;
 }
@@ -273,10 +277,22 @@ body {
     background-color: var(--secondary-color);
 }
 
+.sidebar-tools {
+    text-align: center;
+    background-color: var(--success-color);
+    padding-top: 8px;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+
+.sidebar-tools:hover {
+    background-color: var(--success-color-dark);
+}
+
 .sidebar-container-heading {
     font-size: var(--sidebar-container-heading-font-size);
     margin: 6px 0;
-    /*text-align: center;*/
+    cursor: default;
 }
 
 .sidebar-container-tools {
@@ -374,11 +390,12 @@ body {
     cursor: pointer;
 }
 
-.dashboard-workspace-buttons .fa-trash, .dashboard-workspace-buttons .fa-paperclip {
+.dashboard-workspace-buttons .fa-trash, .dashboard-workspace-buttons .fa-paperclip,
+.dashboard-workspace-buttons .fa-copy {
     font-size: 32px;
 }
 
-.dashboard-workspace-buttons .fa-paperclip:hover {
+.dashboard-workspace-buttons .fa-paperclip:hover, .dashboard-workspace-buttons .fa-copy:hover {
     color: var(--success-color);
 }
 
@@ -438,9 +455,9 @@ body {
     background: var(--light-color);
 }
 
-/*::-webkit-scrollbar-thumb:hover {*/
-/*    background: var(--scrollbar-color);*/
-/*}*/
+::-webkit-scrollbar-thumb:hover {
+    background: var(--light-color-dark);
+}
 
 @media screen and (max-width: 500px) {
     .show-mobile {
@@ -485,6 +502,15 @@ body {
     }
     to {
         transform: scale(1)
+    }
+}
+
+@keyframes animatezoomout {
+    from {
+        transform: scale(1)
+    }
+    to {
+        transform: scale(0)
     }
 }
 

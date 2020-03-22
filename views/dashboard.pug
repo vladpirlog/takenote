@@ -3,12 +3,15 @@ extends layout
 block content
     .dashboard-content
         .sidebar.hide-mobile
+            .sidebar-tools.sidebar-container(onclick='addCollection();')
+                i.fas.fa-plus
         .dashboard-workspace
             .dashboard-workspace-tools
                 .note-title-field.animate-focus(contenteditable='true' data-placeholder='Write the title here...')
                 .dashboard-workspace-buttons
-                    i.fas.fa-paperclip(onclick='vievAttachments();')
+                    i.fas.fa-copy(onclick='copyToClipboard();')
+                    i.fas.fa-paperclip(onclick='viewAttachments();')
                     i.fas.fa-trash(onclick='deleteNote();')
                     .save-button(onclick='updateNote();') SAVE
-            .dashboard-workspace-textarea.animate-focus(contenteditable='true' data-placeholder='...and the note content here')
+            .dashboard-workspace-textarea.animate-focus(contenteditable='true' data-placeholder='...and the note content here :D')
     script(src='javascripts/dashboardUtils.js')
