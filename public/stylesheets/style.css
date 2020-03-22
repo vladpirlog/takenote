@@ -13,8 +13,8 @@
     --success-color-dark: #27629c;
     --info-color: #baa300;
     --light-color: #e5f2e5;
-    --scrollbar-color: #888;
-    --scrollbar-color-dark: #555;
+    --light-color-dark: #888;
+    --light-color-darker: #555;
     --font-family: Oxanium;
     --font-size: 20px;
     --navbar-font-size: 32px;
@@ -132,7 +132,7 @@ body {
 }
 
 .dropdown-element:hover {
-    background-color: var(--scrollbar-color);
+    background-color: var(--light-color-dark);
 }
 
 .dropdown-logout {
@@ -184,9 +184,15 @@ body {
 }
 
 .bttn {
-    padding: 4px 8px;
+    padding: 6px 10px;
     font: 16px var(--font-family);
     border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--light-color);
+}
+
+.bttn:hover {
+    background-color: var(--light-color-dark);
 }
 
 .float-right {
@@ -315,7 +321,7 @@ body {
 .dashboard-workspace {
     flex: 1;
     font-size: 28px;
-    margin: 16px;
+    margin: 16px 8px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -334,6 +340,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
 .note-title-field {
@@ -344,7 +351,14 @@ body {
     outline: none;
     padding: 6px;
     max-width: 50%;
+    height: fit-content;
     /*    TODO: de limitat lungimea titlului*/
+}
+
+.note-title-field:empty:before, .dashboard-workspace-textarea:empty:before {
+    content: attr(data-placeholder);
+    color: var(--light-color-dark);
+    cursor: text;
 }
 
 .dashboard-workspace-buttons {
@@ -352,12 +366,12 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
-.dashboard-workspace-buttons > *{
+.dashboard-workspace-buttons > * {
     margin: 0 12px;
     cursor: pointer;
-    align-self: center;
 }
 
 .dashboard-workspace-buttons .fa-trash, .dashboard-workspace-buttons .fa-paperclip {
@@ -403,12 +417,11 @@ body {
 /*}*/
 
 .animate-focus {
-    border: 4px var(--scrollbar-color-dark) solid;
+    border: 4px var(--light-color-darker) solid;
     border-radius: 2px;
 }
 
-.animate-focus:focus
-{
+.animate-focus:focus {
     animation: animatefocus 0.7s forwards;
 }
 

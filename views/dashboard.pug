@@ -5,10 +5,10 @@ block content
         .sidebar.hide-mobile
         .dashboard-workspace
             .dashboard-workspace-tools
-                .note-title-field.animate-focus(contenteditable='true')
+                .note-title-field.animate-focus(contenteditable='true' data-placeholder='Write the title here...')
                 .dashboard-workspace-buttons
                     i.fas.fa-paperclip(onclick='vievAttachments();')
                     i.fas.fa-trash(onclick='deleteNote();')
                     .save-button(onclick='updateNote();') SAVE
-            textarea.dashboard-workspace-textarea.animate-focus
+            .dashboard-workspace-textarea.animate-focus(contenteditable='true' data-placeholder='...and the note content here')
     script(src='javascripts/dashboardUtils.js')

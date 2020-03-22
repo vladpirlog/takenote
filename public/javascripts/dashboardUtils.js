@@ -11,15 +11,18 @@ const noteTitleField = document.getElementsByClassName("note-title-field")[0];
 // ============================= FUNCTIONS FOR FETCHING DATA/INTERACTING WITH THE BACKEND ===========================
 
 // GET note content
-function getContent(ev) {
-    modifyActiveNote(ev.target);
+function getNoteContent(ev) {
     const noteTitle = ev.target.textContent;
     const collectionTitle = ev.target.parentElement
         .querySelector(".sidebar-container-heading")
         .textContent.trim();
     axios
         .get(`/api/note/${collectionTitle}/${noteTitle}`)
-        .then(displayNote)
+        .then(function (response) {
+            modifyActiveNote(ev.target);
+            sessionStorage.setItem("currentNote", JSON.stringify(response.data.note));
+            displayNote(response.data.note);
+        })
         .catch(function (err) {
             console.log(
                 err.response.status || "Status unknown.",
@@ -55,7 +58,10 @@ function addNote(ev) {
     axios
         .post("/api/note/add", form)
         .then(function (response) {
-            addNoteToContainer(response.data.note, container);
+            const containerElement = addNoteToContainer(response.data.note, container);
+            modifyActiveNote(containerElement);
+            sessionStorage.setItem("currentNote", JSON.stringify(response.data.note));
+            displayNote(response.data.note);
         })
         .catch(function (err) {
             console.log(err.response.data.msg || "There was a problem.");
@@ -68,11 +74,10 @@ function updateNote() {
         alert("Note title cannot be empty.");
         return;
     }
-    saveButton.textContent = 'LOADING';
-    saveButton.style.backgroundColor = 'var(--info-color)';
-    saveButton.onclick = null;
+    saveToLoading(true);
     let form = new FormData();
     if (sessionStorage.getItem("currentNote")) {
+        // current note updates
         form.append(
             "noteTitle",
             JSON.parse(sessionStorage.getItem("currentNote")).title
@@ -82,28 +87,74 @@ function updateNote() {
             JSON.parse(sessionStorage.getItem("currentNote")).collectionTitle
         );
         form.append("newNoteTitle", noteTitleField.textContent);
-        form.append("newNoteContent", dashBoardWorkspaceTextarea.value || "");
+        form.append("newNoteContent", dashBoardWorkspaceTextarea.textContent || "");
         axios
             .post("/api/note/update", form)
-            .then(finishedSaving)
+            .then(function (response) {
+                sessionStorage.setItem("currentNote", JSON.stringify(response.data.note));
+                document.querySelector('.active-note').textContent = response.data.note.title;
+            })
+            .catch(function (err) {
+                alert(err.response.data.msg || "There was a problem.");
+            }).finally(function () {
+            saveToLoading(false);
+        });
+    } else {
+        // no note is currently open, so another one is created
+        const temp = document.querySelectorAll('.sidebar-container-heading');
+        if (temp.length > 0) {
+            form.append("noteTitle", noteTitleField.textContent);
+            form.append("noteContent", dashBoardWorkspaceTextarea.textContent || "");
+            form.append("collectionTitle", temp[0].textContent.trim());
+            axios
+                .post("/api/note/add", form)
+                .then(function (response) {
+                    const containerElement = addNoteToContainer(response.data.note, temp[0].parentElement);
+                    modifyActiveNote(containerElement);
+                    sessionStorage.setItem("currentNote", JSON.stringify(response.data.note));
+                    displayNote(response.data.note);
+                })
+                .catch(function (err) {
+                    alert(err.response.data.msg || "There was a problem.");
+                }).finally(function () {
+                saveToLoading(false);
+            });
+        } else {
+            alert('No collection to add note to.');
+        }
+    }
+}
+
+// DELETE note from collection
+function deleteNote() {
+    if (sessionStorage.getItem("currentNote")) {
+        const form = new FormData();
+        form.append(
+            "noteTitle",
+            JSON.parse(sessionStorage.getItem("currentNote")).title
+        );
+        form.append(
+            "collectionTitle",
+            JSON.parse(sessionStorage.getItem("currentNote")).collectionTitle
+        );
+        axios.post('/api/note/delete', form)
+            .then(function (response) {
+                let container = null;
+                document.querySelectorAll('.sidebar-container-heading').forEach((elem) => {
+                    if (elem.textContent.trim() === JSON.parse(sessionStorage.getItem("currentNote")).collectionTitle) {
+                        container = elem.parentElement;
+                    }
+                });
+                deleteNoteFromContainer(response.data.note, container);
+                sessionStorage.clear();
+                resetDashboard();
+                modifyActiveNote(null);
+            })
             .catch(function (err) {
                 alert(err.response.data.msg || "There was a problem.");
             });
     } else {
-        const temp = document.querySelectorAll('.sidebar-container-heading');
-        if (temp.length > 0) {
-            form.append("noteTitle", noteTitleField.textContent);
-            form.append("noteContent", dashBoardWorkspaceTextarea.value || "");
-            form.append("collectionTitle", temp[0].textContent.trim());
-            axios
-                .post("/api/note/add", form)
-                .then(finishedSaving)
-                .catch(function (err) {
-                    alert(err.response.data.msg || "There was a problem.");
-                });
-        } else {
-            alert('No collection to add note to.');
-        }
+        alert('There was a problem.');
     }
 }
 
@@ -135,17 +186,12 @@ axios
         alert(err.response.data.msg || "There was a problem.");
     });
 
-// ========================= FUNCTIONS FOR DISPLAYING DATA ======================
+// ========================= FUNCTIONS FOR MODIFYING DISPLAYED DATA ======================
 
 // DISPLAY note content
-function displayNote(response) {
-    sessionStorage.setItem("currentNote", JSON.stringify(response.data.note));
-    dashBoardWorkspaceTextarea.value = JSON.parse(
-        sessionStorage.getItem("currentNote")
-    ).content;
-    noteTitleField.textContent = JSON.parse(
-        sessionStorage.getItem("currentNote")
-    ).title;
+function displayNote(note) {
+    dashBoardWorkspaceTextarea.textContent = note.content;
+    noteTitleField.textContent = note.title;
 }
 
 function initializeDashboard(response) {
@@ -176,23 +222,48 @@ function addNoteToContainer(note, container) {
     let containerElement = document.createElement("div");
     containerElement.classList.add("sidebar-container-element");
     containerElement.textContent = note.title;
-    containerElement.onclick = getContent;
+    containerElement.onclick = getNoteContent;
     container.appendChild(containerElement);
+    return containerElement;
 }
 
-function finishedSaving(response) {
-    saveButton.textContent = 'SAVE';
-    saveButton.style.backgroundColor = 'var(--success-color)';
-    saveButton.onclick = updateNote;
-    sessionStorage.setItem("currentNote", JSON.stringify(response.data.note));
+function deleteNoteFromContainer(note, container) {
+    const elements = container.querySelectorAll('.sidebar-container-element');
+    let toDelete;
+    for (let el of elements) {
+        if (el.textContent.trim() === note.title) {
+            toDelete = el;
+            break;
+        }
+    }
+    toDelete.parentElement.removeChild(toDelete);
 }
 
 function modifyActiveNote(containerElement) {
-    const active = document.querySelectorAll('.active-note');
-    if (active.length > 0) active.forEach((elem) => {
+    const actives = document.querySelectorAll('.active-note');
+    if (actives.length > 0) actives.forEach((elem) => {
         elem.classList.remove('active-note');
-        elem.onclick = getContent;
+        elem.onclick = getNoteContent;
     });
-    containerElement.classList.add('active-note');
-    containerElement.onclick = null;
+    if (containerElement) {
+        containerElement.classList.add('active-note');
+        containerElement.onclick = null;
+    }
+}
+
+function resetDashboard() {
+    dashBoardWorkspaceTextarea.textContent = "";
+    noteTitleField.textContent = "";
+}
+
+function saveToLoading(val) {
+    if (val) {
+        saveButton.textContent = 'LOADING';
+        saveButton.style.backgroundColor = 'var(--info-color)';
+        saveButton.onclick = null;
+    } else {
+        saveButton.textContent = 'SAVE';
+        saveButton.style.backgroundColor = 'var(--success-color)';
+        saveButton.onclick = updateNote;
+    }
 }
