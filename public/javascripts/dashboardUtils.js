@@ -210,7 +210,7 @@ function shareNote() {
     form.append('collectionTitle', note.collectionTitle);
     axios.post('/api/note/share', form)
         .then(function (response) {
-            alert(`The share link is ${window.location.origin}/${response.data.link.path}`);
+            alert(`The share link is ${window.location.origin}${response.data.link}`);
         })
         .catch(function (err) {
             alert(err.response.data.msg || "There was a problem.");
@@ -240,6 +240,7 @@ function initializeDashboard(response) {
     for (let col of response.data.collections) {
         addContainer(col);
     }
+    sidebar.scrollTop = 0;
 }
 
 function addContainer(collection) {

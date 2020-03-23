@@ -36,6 +36,10 @@ const NoteSchema = new mongoose.Schema({
     collaborators: {
         type: [String],
         required: false
+    },
+    link: {
+        type: String,
+        required: false
     }
 });
 

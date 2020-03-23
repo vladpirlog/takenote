@@ -1,18 +1,14 @@
 .navbar
-    a.navbar-elem.navbar-left.hide-mobile(href='/') TakeNote
-    .navbar-elem.navbar-left.show-mobile
+    a.navbar-elem.hide-mobile(href='/') TakeNote
+    .navbar-elem.show-mobile
         i.fas.fa-bars
-    //img.hide-mobile(src='/images/favicon.ico' alt='icon')
     if isAuthenticated
-        .navbar-elem.navbar-right.dropdown.no-select= loggedUser.username + ' '
+        .navbar-elem.dropdown.no-select= loggedUser.username + ' '
             i.fa.fa-caret-down
             .dropdown-content.animate
                 a.dropdown-element(href='/dashboard') Dashboard
                 span.dropdown-logout#logout-button Logout
     else
-        span#open-login.navbar-elem.navbar-right.no-select= 'Login  '
+        #open-login.navbar-elem.no-select= 'Login  '
             i.fas.fa-sign-in-alt
         include login_modal
-        span#open-register.navbar-elem.navbar-right.hide-mobile.no-select= 'Register  '
-            i.fas.fa-user-plus
-        include register_modal

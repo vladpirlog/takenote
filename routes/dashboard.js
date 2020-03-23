@@ -18,19 +18,4 @@ function checkIfLoggedIn(req, res, next) {
     } else return res.redirect('/');
 }
 
-// function getData(req, res, next) {
-//     request(url.format({
-//         protocol: req.protocol,
-//         host: req.get('host'),
-//         pathname: '/api/user/collections',
-//         query: 'includeCollaborations=true'
-//     }), {json: true}, function (err, response, body) {
-//         if (err) {
-//             return next(err);
-//         }
-//         console.log(body);
-//         return next();
-//     });
-// }
-
 module.exports = router;

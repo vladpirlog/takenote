@@ -3,7 +3,6 @@ const router = express.Router();
 const Note = require("../models/Note");
 const Collection = require("../models/Collection");
 const User = require("../models/User");
-const Link = require("../models/Link");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const randomString = require('randomstring');
@@ -899,29 +898,31 @@ async function getShareLink(req, res, next) {
             msg: "Could not find note."
         });
     }
-
-    const str = randomString.generate(20);
-    const newLink = new Link({
-        path: str,
-        noteID: note._id.toString(),
-        collectionID: collection._id.toString(),
-        userID: res.locals.loggedUser.userID
-    });
-    // TODO: de vazut cum sa implementez link-urile pt share
-    newLink.save(function (err, link) {
-        if (err) return next(err);
-        if (link) {
-            return res.status(201).json({
-                status: 201,
-                msg: 'Link created.',
-                link: link
-            });
-        }
-        return res.status(500).json({
-            status: 500,
-            msg: "Could not create link."
+    if(note.link) {
+        return res.status(200).json({
+            status: 200,
+            msg: 'Link successfully fetched.',
+            link: note.link
         });
-    });
+    } else {
+        const str = '/share/' + randomString.generate(20);
+        const newNote = await Note.findOneAndUpdate(
+            {
+                title: noteTitle,
+                userID: res.locals.loggedUser.userID,
+                collectionID: collection._id.toString()
+            },
+            {
+                edited: Date.now(),
+                link: str
+            }, {new: true}
+        );
+        return res.status(201).json({
+            status: 201,
+            msg: 'New link created.',
+            link: newNote.link
+        });
+    }
 }
 
 function checkRegex() {

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Note = require('../models/Note');
-// const Link = require('../')
 const jwt = require('jsonwebtoken');
 
 /* GET home page. */
@@ -42,8 +41,15 @@ function checkNote(req, res, next) {
 }
 
 // GET note page shared with unique link
-router.get('/:link', function (req, res, next) {
-
+router.get('/share/:str', async function (req, res, next) {
+    const {str} = req.params;
+    const link = '/share/' + str;
+    // TODO: de construit o pagina pt afisarea notelor share-uite
+    const note = await Note.findOne({link: link});
+    if (!note) {
+        return next(new Error('Not Found.'));
+    }
+    return res.send(note);
 });
 
 module.exports = router;

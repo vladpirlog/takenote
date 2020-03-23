@@ -4,7 +4,7 @@
     --sidebar-padding: 0px;
     --separator-height: 4px;
     --primary-color: #008000;
-    --background-color: #7fbf7f;
+    --primary-color: #7fbf7f;
     --secondary-background-color: #7fa87f;
     --dark-color: #000c00;
     --danger-color: #b93441;
@@ -14,7 +14,7 @@
     /*--accent-color: #004000;*/
     --font-family: Oxanium;
     --font-size: 20px;
-    --navbar-font-size: 32px;
+    --font-size-larger: 32px;
     --tools-font-size: 28px;
     --navbar-padding: 12px;
     --tools-padding: 14px;
@@ -25,7 +25,7 @@
 
 body {
     margin: 0;
-    background: linear-gradient(to bottom, var(--background-color), var(--secondary-background-color), var(--background-color)) fixed;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-background-color), var(--primary-color)) fixed;
     font-size: var(--font-size);
     font-family: var(--font-family), sans-serif;
 }
@@ -46,7 +46,7 @@ body {
 
 #navbar {
     height: var(--navbar-height);
-    font-size: var(--navbar-font-size);
+    font-size: var(--font-size-larger);
     background-color: var(--dark-color);
     position: fixed;
     z-index: 1;
@@ -133,7 +133,7 @@ body {
 }
 
 .modal-header {
-    font-size: var(--navbar-font-size);
+    font-size: var(--font-size-larger);
     font-weight: bold;
     text-transform: uppercase;
     text-align: center;
@@ -260,7 +260,7 @@ body {
 }
 
 .sidebar-container-element:hover {
-    color: var(--background-color);
+    color: var(--primary-color);
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 5px;
     cursor: pointer;

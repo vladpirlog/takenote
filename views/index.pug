@@ -2,19 +2,28 @@ extends layout
 
 block content
     .index-content
-        h1= title
-        p Welcome to #{title}
-        //img#image_preview(width='200px' height='200px' src='#' alt='Choose photo to upload and show...')
-        //br
-        //br
-        //input#select_file(name='select_file' type='file' value='Select file to upload' accept="image/png, image/jpeg")
-        br
-        br
-        p
-        | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aperiam consequuntur dignissimos
-        | fugiat rerum sapiente tenetur. Aut beatae cumque dolores dolorum eligendi eos facere fugit impedit iure
-        | magnam nihil optio, rem repellendus sequi tempora tempore ullam. Ad aliquid amet animi cumque delectus dolores
-        | ea earum, eligendi enim eos esse explicabo in inventore ipsam laborum libero modi molestiae neque odit optio
-        | perferendis perspiciatis quasi quibusdam quidem reprehenderit rerum sequi soluta sunt vitae voluptas!
-        | Amet architecto dolorum excepturi facilis ipsa necessitatibus repudiandae. Beatae consequatur eaque error et
-        | explicabo fugit itaque minima molestiae nam, quia recusandae reiciendis reprehenderit rerum sed sit sunt voluptatum.
+        .index-text
+            p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias animi aperiam asperiores beatae blanditiis cum deserunt dicta dolorem dolorum eos exercitationem fuga harum impedit libero molestias necessitatibus neque non, officiis omnis perferendis perspiciatis placeat quaerat quas quos similique soluta vitae. Accusantium aliquam aut commodi consequatur cum dolore dolorem earum eligendi est et excepturi harum hic iusto labore laborum magnam maiores maxime minus molestias numquam obcaecati odit perspiciatis praesentium provident qui quibusdam reiciendis rem repellat repudiandae soluta, tempore tenetur voluptate voluptatibus. Ab adipisci blanditiis distinctio dolorem expedita fuga iure, libero modi mollitia nesciunt ratione repellendus similique velit. Accusamus alias aliquid cum dolore earum esse illum ipsam ipsum iste iusto laborum libero, modi mollitia quaerat, quisquam repellat repellendus repudiandae sit vel?
+        if !isAuthenticated
+            .index-register
+                .index-register-header= 'Register  '
+                    i.fas.fa-user-plus
+                .index-register-left
+                .index-register-middle
+                        label(for='username')
+                            b Username
+                        input#username.input-field(type='text', placeholder='Enter Username', name='username')
+                        label(for='email')
+                            b Email
+                        input#email.input-field(type='text', placeholder='Enter Email', name='email')
+                        label(for='password')
+                            b Password
+                        input#password.input-field(type='password', placeholder='Enter Password', name='password')
+                        label(for='confirm_password')
+                            b Confirm Password
+                        input#confirm_password.input-field(type='password', placeholder='Confirm Password', name='confirm_password')
+                .index-register-right
+                .index-register-footer
+                    #submit-register.bttn Register
+                    .bttn(onclick='document.getElementById("open-login").click();')
+                        | Go to Login
