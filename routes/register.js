@@ -5,7 +5,7 @@ const User = require('../models/User');
 const sha256 = require('sha256');
 const randomString = require('randomstring');
 
-// GET register page
+// GET register page -> nu mai este pagina separata
 // router.get('/', function (req, res, next) {
 //     return res.render('register', {title: 'Register'});
 // });

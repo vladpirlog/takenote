@@ -299,7 +299,7 @@ input {
     cursor: pointer;
 }
 
-/* TODO: de animat erorile de autentificare*/
+/* TODO: de animat erorile de login/register (de preferat cu modals) */
 .animate {
     animation: animatezoom 0.3s forwards;
 }
@@ -390,8 +390,6 @@ input {
     background-color: var(--dark-color);
 }
 
-/* TODO: de configurat ascunderea sidebar-ului pe ecranele mai mici*/
-
 .dashboard-workspace {
     flex: 1;
     font-size: 28px;
@@ -428,7 +426,7 @@ input {
     max-width: 40%;
     max-height: 100%;
     height: fit-content;
-    /*    TODO: de limitat lungimea titlului*/
+    /* TODO: de limitat lungimea titlului */
 }
 
 .note-title-field:empty:before, .dashboard-workspace-textarea:empty:before {

@@ -8,29 +8,7 @@ const fs = require("fs");
 const randomString = require('randomstring');
 // TODO: de adaugat functii pt a reduce codul duplicat
 // TODO: de adaugat limita pt lungimea titlului
-
-// Middleware function for restricting access
-// router.use(async function (req, res, next) {
-//     const {noteTitle, collectionTitle} = req.body;
-//
-//     // TODO: de adugat autorizarea pt note la care esti colaborator
-//     if (collectionTitle) {
-//         const collection = await Collection.findOne({title: collectionTitle, userID: res.locals.loggedUser.userID});
-//         if (!collection && noteTitle) {
-//             const note = await Note.findOne({title: noteTitle});
-//             if (note) {
-//                 if (note.collaborators.indexOf(res.locals.loggedUser.username) !== -1) {
-//                     // TODO: de autorizat doar modificarile asupra notei la care esti utilizator
-//                     return next();
-//                 } else return res.status(401).json({
-//                     status: 401,
-//                     msg: 'Unauthorized.'
-//                 });
-//             }
-//         }
-//     }
-//     return next();
-// });
+// TODO: de adugat autorizarea pt note la care esti colaborator
 
 // GET all collections of a user; collaborating notes can be included too
 router.get("/user/collections", getAllCollections);
