@@ -22,6 +22,12 @@
     --font-size-larger: 2rem;
     --navbar-padding: 2%;
     --content-padding: 28px;
+
+    /*--primary-color: #85BDA6;*/
+    /*--primary-color-dark: #3E885B;*/
+    /*--secondary-color: #2F4B26;*/
+    /*--success-color: #BEDCFE;*/
+    /*--light-color: #C0D7BB;*/
 }
 
 body {
@@ -31,13 +37,14 @@ body {
     flex-direction: column;
     margin: 0;
     padding: 0;
-    background: url("/images/background.png") no-repeat center center fixed;
-    background-size: cover;
+    /*background: url("/images/background.png") no-repeat center center fixed;*/
+    /*background-size: cover;*/
+    background: radial-gradient(ellipse at center, var(--light-color) 0%, var(--primary-color) 100%) fixed;
     font-size: var(--font-size-small);
     font-family: var(--font-family), sans-serif;
-    overflow: auto;
+    /*overflow: hidden;*/
     min-height: 35rem;
-    max-height: 45rem;
+    /*max-height: 45rem;*/
 }
 
 /* NAVBAR */
@@ -135,7 +142,7 @@ body {
 
 /* INDEX PAGE CONTENT */
 .index-content {
-    padding: 3% 6%;
+    padding: 2% 6%;
     margin: 0;
     color: var(--dark-color);
     flex: 1;
@@ -157,6 +164,7 @@ body {
     grid-template-areas: "index-register-header index-register-header index-register-header" "index-register-left index-register-middle index-register-right" "index-register-left index-register-middle index-register-right" "index-register-left index-register-middle index-register-right" "index-register-left index-register-middle index-register-right" "index-register-footer index-register-footer index-register-footer";
     box-shadow: 5px -5px 5px rgba(0, 0, 0, 0.6);
     border-radius: 8px;
+    min-height: 28rem;
 }
 
 .index-register-header {
@@ -228,7 +236,6 @@ input {
     width: 100%;
     height: 100%;
     overflow: auto;
-    /*background-color: rgb(0, 0, 0);*/
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -297,15 +304,6 @@ input {
     color: var(--dark-color);
     text-decoration: none;
     cursor: pointer;
-}
-
-/* TODO: de animat erorile de login/register (de preferat cu modals) */
-.animate {
-    animation: animatezoom 0.3s forwards;
-}
-
-.animate-out {
-    animation: animatezoomout 0.3s forwards;
 }
 
 /*================= DASHBOARD STYLING ===================*/
@@ -436,7 +434,6 @@ input {
 }
 
 .dashboard-workspace-buttons {
-    float: right;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -448,18 +445,19 @@ input {
     cursor: pointer;
 }
 
-.dashboard-workspace-buttons .fa-paperclip:hover, .dashboard-workspace-buttons .fa-copy:hover,
-.dashboard-workspace-buttons .fa-share-alt:hover {
+.dashboard-workspace-buttons > i:not(.fa-trash):hover {
     color: var(--success-color);
 }
 
-.dashboard-workspace-buttons .fa-trash:hover {
+.dashboard-workspace-buttons > i.fa-trash:hover {
     color: var(--danger-color);
 }
 
 .save-button {
-    display: inline;
-    padding: 8px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 24px;
     font-weight: bold;
     border-radius: 5px;
     background-color: var(--success-color);
@@ -478,6 +476,14 @@ input {
 }
 
 /*TODO: de facut background-ul la textarea*/
+/* TODO: de animat erorile de login/register (de preferat cu modals) */
+.animate {
+    animation: animatezoom 0.3s forwards;
+}
+
+.animate-out {
+    animation: animatezoomout 0.3s forwards;
+}
 
 .animate-focus {
     border: 4px var(--light-color-darker) solid;
@@ -486,6 +492,11 @@ input {
 
 .animate-focus:focus {
     animation: animatefocus 0.7s forwards;
+}
+
+.animate-rotation-clockwise {
+    animation: animaterotationclockwise 1s cubic-bezier(.52, .2, .52, .8) infinite;
+    /*animation: animaterotationclockwise 1s cubic-bezier(1,.01,1,.01) infinite;*/
 }
 
 /* CUSTOM SCROLLBAR (ONLY ON CHROME AND SAFARI) */
@@ -505,8 +516,8 @@ input {
     background: var(--light-color-dark);
 }
 
-.show-mobile, .sandwich {
-    display: none;
+.show-mobile {
+    display: none !important;
 }
 
 @media screen and (max-width: 500px) {
@@ -521,23 +532,28 @@ input {
 
 @media screen and (max-width: 900px) {
     .index-content {
-        grid-template-columns: auto;
-        grid-template-rows: auto 30rem;
-        grid-column-gap: 0;
-        grid-row-gap: 5%;
-        grid-template-areas: "index-text" "index-register";
+        /*grid-template-columns: auto;*/
+        /*grid-template-rows: auto 30rem;*/
+        /*grid-column-gap: 0;*/
+        /*grid-row-gap: 5%;*/
+        /*grid-template-areas: "index-text" "index-register";*/
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 6%;
+    }
+
+    .index-content > * {
+        margin-bottom: 8%;
     }
 
     .index-register {
-        margin-bottom: 6%;
+        min-height: 30rem;
     }
 
     .sidebar {
         display: none;
-    }
-
-    .dashboard-workspace-buttons > i {
-        display: none;
+        height: 100%;
     }
 
     .note-title-field:empty:before, .dashboard-workspace-textarea:empty:before {
@@ -545,11 +561,11 @@ input {
     }
 
     .show-mobile {
-        display: block;
+        display: inline-block !important;
     }
 
     .hide-mobile {
-        display: none;
+        display: none !important;
     }
 }
 
@@ -575,5 +591,11 @@ input {
     to {
         border-radius: 5px;
         border-color: var(--light-color);
+    }
+}
+
+@keyframes animaterotationclockwise {
+    to {
+        transform: rotate(360deg);
     }
 }

@@ -1,12 +1,12 @@
 .navbar
-    a.navbar-elem.hide-mobile(href='/') TakeNote
+    a.navbar-elem.hide-mobile.no-select(href='/') TakeNote
     if includeSandwich
         .navbar-elem.show-mobile(onclick='if(isSidebarOpen()) {closeSidebar();} else {openSidebar();}')
             i.fas.fa-bars
     else
-        .navbar-elem.show-mobile tn
+        a.navbar-elem.show-mobile.no-select(href='/') tn
     if isAuthenticated
-        .navbar-elem.dropdown.no-select= loggedUser.username + ' '
+        .navbar-elem.dropdown.no-select(onclick='')= loggedUser.username + ' '
             i.fa.fa-caret-down
             .dropdown-content.animate
                 a.dropdown-element(href='/') Home

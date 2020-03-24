@@ -334,11 +334,11 @@ function resetDashboard() {
 
 function saveToLoading(val) {
     if (val) {
-        saveButton.textContent = 'LOADING';
+        saveButton.innerHTML = '<i class="fas fa-spinner animate-rotation-clockwise"></i>';
         saveButton.style.backgroundColor = 'var(--info-color)';
         saveButton.onclick = null;
     } else {
-        saveButton.textContent = 'SAVE';
+        saveButton.innerHTML = '<i class="fas fa-save"></i>';
         saveButton.style.backgroundColor = 'var(--success-color)';
         saveButton.onclick = updateNote;
     }
@@ -372,6 +372,7 @@ function openSidebar() {
     sidebar.style.position = 'absolute';
     sidebar.style.left = '0';
     sidebar.style.maxHeight = 'calc(100vh - var(--navbar-height) - var(--separator-height))';
+    // sidebar.style.height = '100%';
 }
 
 function closeSidebar() {

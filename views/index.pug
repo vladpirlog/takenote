@@ -3,25 +3,36 @@ extends layout
 block content
     .index-content
         .index-text
-            p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias animi aperiam asperiores beatae blanditiis cum deserunt dicta dolorem dolorum eos exercitationem fuga harum impedit libero molestias necessitatibus neque non, officiis omnis perferendis perspiciatis placeat quaerat quas quos similique soluta vitae. Accusantium aliquam aut commodi consequatur cum dolore dolorem earum eligendi est et excepturi harum hic iusto labore laborum magnam maiores maxime minus molestias numquam obcaecati odit perspiciatis praesentium provident qui quibusdam reiciendis rem repellat repudiandae soluta, tempore tenetur voluptate voluptatibus. Ab adipisci blanditiis distinctio dolorem expedita fuga iure, libero modi mollitia nesciunt ratione repellendus similique velit. Accusamus alias aliquid cum dolore earum esse illum ipsam ipsum iste iusto laborum libero, modi mollitia quaerat, quisquam repellat repellendus repudiandae sit vel?
+            p
+            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias animi aperiam asperiores
+            | beatae blanditiis cum deserunt dicta dolorem dolorum eos exercitationem fuga harum impedit libero
+            | molestias necessitatibus neque non, officiis omnis perferendis perspiciatis placeat quaerat quas
+            | quos similique soluta vitae. Accusantium aliquam aut commodi consequatur cum dolore dolorem
+            | earum eligendi est et excepturi harum hic iusto labore laborum magnam maiores maxime minus
+            | molestias numquam obcaecati odit perspiciatis praesentium provident qui quibusdam
+            | reiciendis rem repellat repudiandae soluta, tempore tenetur voluptate voluptatibus.
+            | Ab adipisci blanditiis distinctio dolorem expedita fuga iure, libero modi mollitia
+            | nesciunt ratione repellendus similique velit. Accusamus alias aliquid cum
+            | dolore earum esse illum ipsam ipsum iste iusto laborum libero, modi
+            | mollitia quaerat, quisquam repellat repellendus repudiandae sit vel?
         if !isAuthenticated
             .index-register
                 .index-register-header= 'Register  '
                     i.fas.fa-user-plus
                 .index-register-left
-                .index-register-middle
-                        label(for='username')
-                            b Username
-                        input#username.input-field(type='text', placeholder='Enter Username', name='username')
-                        label(for='email')
-                            b Email
-                        input#email.input-field(type='text', placeholder='Enter Email', name='email')
-                        label(for='password')
-                            b Password
-                        input#password.input-field(type='password', placeholder='Enter Password', name='password')
-                        label(for='confirm_password')
-                            b Confirm Password
-                        input#confirm_password.input-field(type='password', placeholder='Confirm Password', name='confirm_password')
+                form.index-register-middle#register-form
+                    label(for='username')
+                        b Username
+                    input#username.input-field(type='text', placeholder='Enter Username', name='username')
+                    label(for='email')
+                        b Email
+                    input#email.input-field(type='text', placeholder='Enter Email', name='email')
+                    label(for='password')
+                        b Password
+                    input#password.input-field(type='password', placeholder='Enter Password', name='password')
+                    label(for='confirm_password')
+                        b Confirm Password
+                    input#confirm_password.input-field(type='password', placeholder='Confirm Password', name='confirm_password')
                 .index-register-right
                 .index-register-footer
                     #submit-register.bttn Register
