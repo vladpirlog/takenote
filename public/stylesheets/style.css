@@ -1,6 +1,6 @@
 :root {
     --navbar-height: 64px;
-    --sidebar-width: 320px;
+    --sidebar-width: 280px;
     --sidebar-padding: 0px;
     --separator-height: 5px;
     --primary-color: #7fbf7f;
@@ -31,10 +31,13 @@ body {
     flex-direction: column;
     margin: 0;
     padding: 0;
-    background: url("/images/background.png");
+    background: url("/images/background.png") no-repeat center center fixed;
     background-size: cover;
     font-size: var(--font-size-small);
     font-family: var(--font-family), sans-serif;
+    overflow: auto;
+    min-height: 35rem;
+    max-height: 45rem;
 }
 
 /* NAVBAR */
@@ -49,6 +52,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 var(--navbar-padding);
+    flex-shrink: 0;
 }
 
 .navbar-elem {
@@ -60,19 +64,23 @@ body {
     cursor: pointer;
 }
 
+.navbar-elem .fa-bars {
+    cursor: pointer;
+}
+
 /* NAVBAR DROPDOWN */
 .dropdown {
     border: none;
     outline: none;
-    padding: 14px 12px;
+    /*padding: 14px 12px;*/
     cursor: pointer;
 }
 
 .dropdown-content {
     position: absolute;
-    margin-top: 12px;
+    margin-top: 0;
     display: none;
-    right: 20px;
+    right: 2%;
     user-select: none;
     font-size: var(--font-size-large);
 }
@@ -122,6 +130,7 @@ body {
     height: var(--separator-height);
     flex-basis: auto;
     background-color: var(--light-color);
+    flex-shrink: 0;
 }
 
 /* INDEX PAGE CONTENT */
@@ -133,15 +142,11 @@ body {
     display: grid;
     grid-template-columns: auto 25%;
     grid-column-gap: 5%;
-    grid-auto-flow: dense;
-    grid-auto-columns: 80%;
-    grid-template-areas:
-        "index-text index-register";
+    grid-template-areas: "index-text index-register";
 }
 
 .index-text {
     grid-area: index-text;
-    /*background: teal;*/
 }
 
 .index-register {
@@ -149,15 +154,9 @@ body {
     display: grid;
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows: 15% repeat(4, 1fr) 12%;
-    grid-template-areas:
-            "index-register-header index-register-header index-register-header"
-            "index-register-left index-register-middle index-register-right"
-            "index-register-left index-register-middle index-register-right"
-            "index-register-left index-register-middle index-register-right"
-            "index-register-left index-register-middle index-register-right"
-            "index-register-footer index-register-footer index-register-footer";
-    box-shadow: 5px -5px 5px  rgba(0,0,0,0.6);
-    border-radius:8px;
+    grid-template-areas: "index-register-header index-register-header index-register-header" "index-register-left index-register-middle index-register-right" "index-register-left index-register-middle index-register-right" "index-register-left index-register-middle index-register-right" "index-register-left index-register-middle index-register-right" "index-register-footer index-register-footer index-register-footer";
+    box-shadow: 5px -5px 5px rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
 }
 
 .index-register-header {
@@ -309,10 +308,6 @@ input {
     animation: animatezoomout 0.3s forwards;
 }
 
-.show-mobile {
-    display: none;
-}
-
 /*================= DASHBOARD STYLING ===================*/
 
 .dashboard-content {
@@ -416,6 +411,7 @@ input {
 
 .dashboard-workspace-tools {
     flex-basis: 10%;
+    max-height: 10%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -424,12 +420,13 @@ input {
 
 .note-title-field {
     flex-basis: 40%;
-    font-size: 32px;
+    font-size: var(--font-size-large);
     font-family: inherit;
     margin: 0;
     outline: none;
     padding: 6px;
-    max-width: 50%;
+    max-width: 40%;
+    max-height: 100%;
     height: fit-content;
     /*    TODO: de limitat lungimea titlului*/
 }
@@ -454,7 +451,7 @@ input {
 }
 
 .dashboard-workspace-buttons .fa-paperclip:hover, .dashboard-workspace-buttons .fa-copy:hover,
-.dashboard-workspace-buttons .fa-share-alt:hover{
+.dashboard-workspace-buttons .fa-share-alt:hover {
     color: var(--success-color);
 }
 
@@ -477,12 +474,9 @@ input {
 .dashboard-workspace-textarea {
     padding: 10px;
     flex: 1;
-    font-size: inherit;
-    font-family: inherit;
-    border: none;
-    outline: none;
-    resize: none;
+    font-size: var(--font-size-large);
     overflow: scroll;
+    outline: none;
 }
 
 /*TODO: de facut background-ul la textarea*/
@@ -502,7 +496,7 @@ input {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--secondary-color);
+    background: var(--light-color-darker);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -513,7 +507,45 @@ input {
     background: var(--light-color-dark);
 }
 
+.show-mobile, .sandwich {
+    display: none;
+}
+
 @media screen and (max-width: 500px) {
+    .modal-content {
+        width: 80%;
+    }
+
+    .navbar {
+        padding: 0 4%;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .index-content {
+        grid-template-columns: auto;
+        grid-template-rows: auto 30rem;
+        grid-column-gap: 0;
+        grid-row-gap: 5%;
+        grid-template-areas: "index-text" "index-register";
+    }
+
+    .index-register {
+        margin-bottom: 6%;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .dashboard-workspace-buttons > i {
+        display: none;
+    }
+
+    .note-title-field:empty:before, .dashboard-workspace-textarea:empty:before {
+        content: none;
+    }
+
     .show-mobile {
         display: block;
     }
@@ -521,14 +553,6 @@ input {
     .hide-mobile {
         display: none;
     }
-
-    .modal-content {
-        width: 80%;
-    }
-
-    /*.index-text {*/
-    /*    display: none;*/
-    /*}*/
 }
 
 @keyframes animatezoom {

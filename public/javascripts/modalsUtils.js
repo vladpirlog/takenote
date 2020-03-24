@@ -1,29 +1,21 @@
-const temp = [
-    {
-        open: document.getElementById('open-login'),
-        modal: document.getElementById('login-modal'),
-        close: document.getElementById('close-login-modal')
-    }, {
-        open: document.getElementById('open-register'),
-        modal: document.getElementById('register-modal'),
-        close: document.getElementById('close-register-modal')
-    }
-];
+const temp = {
+    open: document.getElementById('open-login'),
+    modal: document.getElementById('login-modal'),
+    close: document.getElementById('close-login-modal')
+};
 
-for (let x of temp) {
-    if (x.open) x.open.onclick = function () {
-        openModal(x.modal);
-        window.onclick = function (event) {
-            if (event.target === x.modal) {
-                closeModal(x.modal);
-            }
-        };
+if (temp.open) temp.open.onclick = function () {
+    openModal(temp.modal);
+    window.onclick = function (event) {
+        if (event.target === temp.modal) {
+            closeModal(temp.modal);
+        }
     };
+};
 
-    if (x.close) x.close.onclick = function () {
-        closeModal(x.modal);
-    };
-}
+if (temp.close) temp.close.onclick = function () {
+    closeModal(temp.modal);
+};
 
 function closeModal(modal) {
     modal.style.display = 'none';

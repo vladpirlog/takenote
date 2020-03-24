@@ -1,7 +1,8 @@
 const sidebar = document.getElementsByClassName("sidebar")[0];
-const dashbordContent = document.getElementsByClassName(
+const dashbordWorkspace = document.getElementsByClassName(
     "dashboard-workspace"
 )[0];
+const dashboardContent = document.getElementsByClassName('dashboard-content')[0];
 const dashBoardWorkspaceTextarea = document.getElementsByClassName(
     "dashboard-workspace-textarea"
 )[0];
@@ -359,4 +360,20 @@ function copyToClipboard() {
         document.execCommand("Copy");
         selection.removeAllRanges();
     }
+}
+
+function isSidebarOpen() {
+    if(!sidebar.style.display) return false;
+    return sidebar.style.display !== 'none';
+}
+
+function openSidebar() {
+    sidebar.style.display = 'flex';
+    sidebar.style.position = 'absolute';
+    sidebar.style.left = '0';
+    sidebar.style.maxHeight = 'calc(100vh - var(--navbar-height) - var(--separator-height))';
+}
+
+function closeSidebar() {
+    sidebar.style.display = 'none';
 }

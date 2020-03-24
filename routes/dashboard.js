@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 // GET dashboard page
 router.get('/', checkIfLoggedIn, function (req, res, next) {
-    res.render('dashboard', {title: 'Dashboard'});
+    res.render('dashboard', {title: 'Dashboard', includeSandwich: true});
 });
 
 function checkIfLoggedIn(req, res, next) {

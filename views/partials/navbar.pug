@@ -1,11 +1,15 @@
 .navbar
     a.navbar-elem.hide-mobile(href='/') TakeNote
-    .navbar-elem.show-mobile
-        i.fas.fa-bars
+    if includeSandwich
+        .navbar-elem.show-mobile(onclick='if(isSidebarOpen()) {closeSidebar();} else {openSidebar();}')
+            i.fas.fa-bars
+    else
+        .navbar-elem.show-mobile tn
     if isAuthenticated
         .navbar-elem.dropdown.no-select= loggedUser.username + ' '
             i.fa.fa-caret-down
             .dropdown-content.animate
+                a.dropdown-element(href='/') Home
                 a.dropdown-element(href='/dashboard') Dashboard
                 span.dropdown-logout#logout-button Logout
     else
