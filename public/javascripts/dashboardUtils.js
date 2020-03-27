@@ -377,7 +377,7 @@ function openSidebar() {
     sidebar.style.position = 'absolute';
     sidebar.style.left = '0';
     sidebar.style.height = 'calc(100% - var(--navbar-height) - var(--separator-height))';
-    // sidebar.style.maxHeight = dashboardContent.clientWidth;
+    // TODO: de rezolvat inaltimea sidebar-ului pe mobil cu orientarea landscape
     setTimeout(() => {
         sidebar.classList.remove('animate-open-sidebar');
     }, 160);

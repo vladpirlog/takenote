@@ -15,6 +15,7 @@ block content
             | nesciunt ratione repellendus similique velit. Accusamus alias aliquid cum
             | dolore earum esse illum ipsam ipsum iste iusto laborum libero, modi
             | mollitia quaerat, quisquam repellat repellendus repudiandae sit vel?
+            //- TODO: de adaugat o imagine/ceva dinamic in partea stanga a homepage-ului
         if !isAuthenticated
             .index-register
                 .index-register-header= 'Register  '
@@ -40,4 +41,6 @@ block content
                         | Go to Login
         else
             .index-info
-                h1 Hello             
+                h1 Hello
+                //- TODO: de adaugat un element in locul ferestrei de register cand user-ul este logat
+                
