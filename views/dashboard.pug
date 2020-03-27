@@ -9,11 +9,10 @@ block content
             .dashboard-workspace-tools
                 .note-title-field.animate-focus(contenteditable='true' data-placeholder='Write title here')
                 .dashboard-workspace-buttons
-                    i.fa.fa-caret-down.show-mobile(onclick='')
-                    i.fas.fa-share-alt.hide-mobile(onclick='shareNote();')
-                    i.fas.fa-copy.hide-mobile(onclick='copyToClipboard();')
-                    i.fas.fa-paperclip.hide-mobile(onclick='viewAttachments();')
-                    i.fas.fa-trash.hide-mobile(onclick='deleteNote();')
+                    i.fas.fa-share-alt(onclick='shareNote();')
+                    i.fas.fa-copy(onclick='copyToClipboard();')
+                    i.fas.fa-paperclip(onclick='viewAttachments();')
+                    i.fas.fa-trash(onclick='deleteNote();')
                     .save-button(onclick='updateNote();')
                         i.fas.fa-save
                         //i.fas.fa-spinner.animate-rotation-clockwise

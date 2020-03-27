@@ -41,11 +41,11 @@ function addNote(ev) {
         if (elem.textContent.trim().match(/^New Note\([0-9]*\)$/)) {
             let x = parseInt(
                 elem.textContent
-                    .trim()
-                    .slice(
-                        1 + elem.textContent.trim().indexOf("("),
-                        elem.textContent.trim().indexOf(")")
-                    ), 10);
+                .trim()
+                .slice(
+                    1 + elem.textContent.trim().indexOf("("),
+                    elem.textContent.trim().indexOf(")")
+                ), 10);
             if (newNoteIndex < x) {
                 newNoteIndex = x;
             }
@@ -94,8 +94,8 @@ function updateNote() {
             .catch(function (err) {
                 alert(err.response.data.msg || "There was a problem.");
             }).finally(function () {
-            saveToLoading(false);
-        });
+                saveToLoading(false);
+            });
     } else {
         // no note is currently open, so another one is created
         const temp = document.querySelectorAll('.sidebar-container-heading');
@@ -114,8 +114,8 @@ function updateNote() {
                 .catch(function (err) {
                     alert(err.response.data.msg || "There was a problem.");
                 }).finally(function () {
-                saveToLoading(false);
-            });
+                    saveToLoading(false);
+                });
         } else {
             alert('No collection to add note to.');
             saveToLoading(false);
@@ -164,11 +164,11 @@ function addCollection() {
         if (elem.textContent.trim().match(/^New Col\([0-9]*\)$/)) {
             let x = parseInt(
                 elem.textContent
-                    .trim()
-                    .slice(
-                        1 + elem.textContent.trim().indexOf("("),
-                        elem.textContent.trim().indexOf(")")
-                    ), 10);
+                .trim()
+                .slice(
+                    1 + elem.textContent.trim().indexOf("("),
+                    elem.textContent.trim().indexOf(")")
+                ), 10);
             if (newColIndex < x) {
                 newColIndex = x;
             }
@@ -292,8 +292,12 @@ function addNoteToContainer(note, container) {
     let containerElement = document.createElement("div");
     containerElement.classList.add("sidebar-container-element");
     containerElement.classList.add("animate");
+    containerElement.classList.add("no-select");
     containerElement.textContent = note.title;
-    containerElement.onclick = getNote;
+    containerElement.onclick = function (ev) {
+        getNote(ev);
+        closeSidebar();
+    }
     container.appendChild(containerElement);
     return containerElement;
 }
@@ -363,18 +367,26 @@ function copyToClipboard() {
 }
 
 function isSidebarOpen() {
-    if(!sidebar.style.display) return false;
+    if (!sidebar.style.display) return false;
     return sidebar.style.display !== 'none';
 }
 
 function openSidebar() {
+    sidebar.classList.add('animate-open-sidebar');
     sidebar.style.display = 'flex';
     sidebar.style.position = 'absolute';
     sidebar.style.left = '0';
-    sidebar.style.maxHeight = 'calc(100vh - var(--navbar-height) - var(--separator-height))';
-    // sidebar.style.height = '100%';
+    sidebar.style.height = 'calc(100% - var(--navbar-height) - var(--separator-height))';
+    // sidebar.style.maxHeight = dashboardContent.clientWidth;
+    setTimeout(() => {
+        sidebar.classList.remove('animate-open-sidebar');
+    }, 160);
 }
 
 function closeSidebar() {
-    sidebar.style.display = 'none';
+    sidebar.classList.add('animate-close-sidebar');
+    setTimeout(() => {
+        sidebar.style.display = 'none';
+        sidebar.classList.remove('animate-close-sidebar');
+    }, 160);
 }

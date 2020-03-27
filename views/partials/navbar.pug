@@ -1,7 +1,7 @@
 .navbar
     a.navbar-elem.hide-mobile.no-select(href='/') TakeNote
     if includeSandwich
-        .navbar-elem.show-mobile(onclick='if(isSidebarOpen()) {closeSidebar();} else {openSidebar();}')
+        .navbar-elem.show-mobile.no-select(onclick='if(isSidebarOpen()) {closeSidebar();} else {openSidebar();}')
             i.fas.fa-bars
     else
         a.navbar-elem.show-mobile.no-select(href='/') tn
