@@ -20,7 +20,7 @@
   --font-size-medium: 1.3rem;
   --font-size-large: 1.6rem;
   --font-size-larger: 2rem;
-  --navbar-padding: 2%;
+  --navbar-padding: 12px;
   --content-padding: 28px;
 
   /*--primary-color: #85BDA6;*/
@@ -442,6 +442,7 @@ input {
   margin: 0;
   outline: none;
   padding: 6px;
+  
   /* TODO: de limitat lungimea titlului */
 }
 
@@ -578,10 +579,10 @@ input {
     height: 100%;
   }
 
-  .note-title-field:empty:before,
+  /* .note-title-field:empty:before,
   .dashboard-workspace-textarea:empty:before {
     content: none;
-  }
+  } */
 
   .show-mobile {
     display: inline-block !important;
