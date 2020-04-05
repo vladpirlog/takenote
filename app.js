@@ -15,19 +15,20 @@ const compression = require("compression");
 mongoose
     .connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
     })
-    .then(function() {
+    .then(function () {
         console.log("MongoDB connected...");
     })
-    .catch(function(err) {
+    .catch(function (err) {
         console.log(err);
     });
+mongoose.set("useFindAndModify", false);
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const indexRouter = require("./routes/index");
@@ -44,7 +45,8 @@ app.set("env", process.env.NODE_ENV);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
-app.disable('etag').disable('x-powered-by');
+app.use(compression());
+app.disable("etag").disable("x-powered-by");
 app.use(logger(app.get("env") === "production" ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -54,16 +56,15 @@ app.use(expressSanitizer());
 app.use(
     fileUpload({
         tempFileDir: "./temp/",
-        useTempFiles: true
+        useTempFiles: true,
     })
 );
 app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
 
-app.use(compression());
 // Initialize res.locals.isAuthenticated and res.locals.loggedUser
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     if (req.cookies.jwt_auth) {
-        jwt.verify(req.cookies.jwt_auth, process.env.JWT_SECRET, function(
+        jwt.verify(req.cookies.jwt_auth, process.env.JWT_SECRET, function (
             err,
             decoded
         ) {
@@ -93,12 +94,12 @@ const checkAuth = require("./config/checkAuth");
 app.use("/api", checkAuth, apiRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get("env") === "development" ? err : {};
