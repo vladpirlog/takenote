@@ -5,7 +5,7 @@ const Collection = require("../models/Collection");
 const User = require("../models/User");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const randomString = require('randomstring');
+const randomString = require("randomstring");
 // TODO: de adaugat functii pt a reduce codul duplicat
 // TODO: de adaugat limita pt lungimea titlului
 // TODO: de adugat autorizarea pt note la care esti colaborator
@@ -13,67 +13,111 @@ const randomString = require('randomstring');
 // GET all collections of a user; collaborating notes can be included too
 router.get("/user/collections", getAllCollections);
 
-async function getAllCollections(req, res, next) {
-    const {includeCollaborations} = req.query;
-    let collections = await Collection.find({
-        userID: res.locals.loggedUser.userID
-    });
-    collections = JSON.parse(JSON.stringify(collections)); // altfel nu pot adauga key-uri noi la obiectul collections
+function getAllCollections(req, res, next) {
+    const { includeCollaborations } = req.query;
+    Collection.find(
+        {
+            userID: res.locals.loggedUser.userID,
+        },
+        (err, collections) => {
+            if (err) {
+                return res
+                    .status(500)
+                    .json({ status: 500, msg: "Server error." });
+            }
+            if (collections) {
+                collections = JSON.parse(JSON.stringify(collections)); // altfel nu pot adauga key-uri noi la obiectul collections
+                collections.forEach((col) => (col.notes = []));
 
-    for (let i = 0; i < collections.length; ++i) {
-        collections[i].notes = await Note.find({
-            collectionID: collections[i]._id.toString(),
-            userID: res.locals.loggedUser.userID
-        });
-    }
-
-    let response = {
-        status: 200,
-        msg: "OK",
-        collections: collections
-    };
-    if (includeCollaborations) {
-        response.collaborations = await Note.find({
-            collaborators: res.locals.loggedUser.username
-        });
-    }
-    return res.status(200).json(response);
+                Note.find(
+                    { userID: res.locals.loggedUser.userID },
+                    (err, notes) => {
+                        if (err) {
+                            return res.status(500).json({
+                                status: 500,
+                                message: "Server error.",
+                            });
+                        }
+                        if (notes) {
+                            notes.forEach((n) => {
+                                for (let col of collections) {
+                                    if (col._id.toString() == n.collectionID) {
+                                        col.notes.push(n);
+                                        break;
+                                    }
+                                }
+                            });
+                            let response = {
+                                status: 200,
+                                msg: "OK",
+                                collections: collections,
+                            };
+                            // TODO: de adaugat un query pt gasirea notelor la care user-ul colaboreaza
+                            // Note.find(
+                            //         {
+                            //             collaborators: res.locals.loggedUser.username,
+                            //         },
+                            //         (err, collabNotes) => {
+                            //             if (err)
+                            //                 return res.status(500).json({
+                            //                     status: 500,
+                            //                     message: "Server error.",
+                            //                 });
+                            //             response.collaborations = collabNotes;
+                            //             return res.status(200).json(response);
+                            //         }
+                            //     );
+                            return res.status(200).json(response);
+                        } else {
+                            return res
+                                .status(404)
+                                .json({ status: 404, msg: "Notes not found." });
+                        }
+                    }
+                );
+            } else {
+                return res
+                    .status(404)
+                    .json({ status: 404, msg: "Collections not found." });
+            }
+        }
+    );
 }
 
 // GET a collection
 router.get("/collection/:collectionTitle", getCollection);
 
 async function getCollection(req, res, next) {
-    const {collectionTitle} = req.params;
+    const { collectionTitle } = req.params;
     if (!collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     let collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
 
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
     const notes = await Note.find({
         collectionID: collection._id.toString(),
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     collection = JSON.parse(JSON.stringify(collection)); // altfel nu pot adauga alte key-uri la obiectul collection
     collection.notes = notes;
@@ -81,7 +125,7 @@ async function getCollection(req, res, next) {
     return res.status(200).json({
         status: 200,
         msg: "OK",
-        collection: collection
+        collection: collection,
     });
 }
 
@@ -89,35 +133,35 @@ async function getCollection(req, res, next) {
 router.post("/collection/add", addCollection);
 
 async function addCollection(req, res, next) {
-    const {collectionTitle} = req.body;
+    const { collectionTitle } = req.body;
     if (!collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     const newCollection = new Collection({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
 
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
 
     if (collection) {
         return res.status(409).json({
             status: 409,
-            msg: "A collection with that name already exists."
+            msg: "A collection with that name already exists.",
         });
     }
 
@@ -126,13 +170,13 @@ async function addCollection(req, res, next) {
         if (collection) {
             return res.status(201).json({
                 status: 201,
-                msg: 'Collection created.',
-                collection: collection
+                msg: "Collection created.",
+                collection: collection,
             });
         }
         return res.status(500).json({
             status: 500,
-            msg: "Could not create collection."
+            msg: "Could not create collection.",
         });
     });
 }
@@ -141,36 +185,37 @@ async function addCollection(req, res, next) {
 router.post("/collection/update", updateCollection);
 
 async function updateCollection(req, res, next) {
-    const {collectionTitle, newCollectionTitle} = req.body;
+    const { collectionTitle, newCollectionTitle } = req.body;
     if (!collectionTitle || !newCollectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(collectionTitle, newCollectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     const newCollection = await Collection.findOneAndUpdate(
-        {title: collectionTitle, userID: res.locals.loggedUser.userID},
-        {title: newCollectionTitle}, {new: true}
+        { title: collectionTitle, userID: res.locals.loggedUser.userID },
+        { title: newCollectionTitle },
+        { new: true }
     );
 
     if (newCollection) {
         return res.status(200).json({
             status: 200,
             msg: "Collection updated.",
-            collection: newCollection
+            collection: newCollection,
         });
     } else
         return res.status(404).json({
             status: 404,
-            msg: "Could not update collection."
+            msg: "Could not update collection.",
         });
 }
 
@@ -178,43 +223,43 @@ async function updateCollection(req, res, next) {
 router.post("/collection/delete", deleteCollection);
 
 async function deleteCollection(req, res, next) {
-    const {collectionTitle} = req.body;
+    const { collectionTitle } = req.body;
 
     if (!collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     const collection = await Collection.findOneAndDelete({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
 
     if (collection) {
         // Also delete all notes in that collection
         const notes = await Note.deleteMany({
             collectionID: collection._id.toString(),
-            userID: res.locals.loggedUser.userID
+            userID: res.locals.loggedUser.userID,
         });
 
         return res.status(200).json({
             status: 200,
             msg: "Collection deleted.",
-            collection: collection
+            collection: collection,
         });
     } else {
         return res.status(404).json({
             status: 404,
-            msg: "Could not delete collection."
+            msg: "Could not delete collection.",
         });
     }
 }
@@ -223,49 +268,49 @@ async function deleteCollection(req, res, next) {
 router.get("/note/:collectionTitle/:noteTitle", getNote);
 
 async function getNote(req, res, next) {
-    const {noteTitle, collectionTitle} = req.params;
+    const { noteTitle, collectionTitle } = req.params;
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
 
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
     const note = await Note.findOne({
         collectionID: collection._id.toString(),
         title: noteTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
 
     if (note) {
         return res.status(200).json({
             status: 200,
             msg: "OK",
-            note: note
+            note: note,
         });
     } else
         return res.status(404).json({
             status: 404,
-            msg: "Could not get note."
+            msg: "Could not get note.",
         });
 }
 
@@ -273,29 +318,29 @@ async function getNote(req, res, next) {
 router.post("/note/add", addNote);
 
 async function addNote(req, res, next) {
-    const {noteTitle, noteContent, collectionTitle} = req.body;
+    const { noteTitle, noteContent, collectionTitle } = req.body;
     if (!noteTitle || !collectionTitle)
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -303,12 +348,12 @@ async function addNote(req, res, next) {
     const note = await Note.findOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (note) {
         return res.status(409).json({
             status: 409,
-            msg: "There is already a note with that name in the collection."
+            msg: "There is already a note with that name in the collection.",
         });
     }
 
@@ -317,7 +362,7 @@ async function addNote(req, res, next) {
         content: noteContent || "",
         userID: res.locals.loggedUser.userID,
         collectionTitle: collectionTitle,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
 
     newNote.save(function (err, note) {
@@ -326,12 +371,12 @@ async function addNote(req, res, next) {
             return res.status(201).json({
                 status: 201,
                 msg: "Note created.",
-                note: note
+                note: note,
             });
         }
         return res.status(500).json({
             status: 500,
-            msg: "Could not create note."
+            msg: "Could not create note.",
         });
     });
 }
@@ -340,31 +385,31 @@ async function addNote(req, res, next) {
 router.post("/note/update", updateNote);
 
 async function updateNote(req, res, next) {
-    let {noteTitle, collectionTitle, newNoteTitle, newNoteContent} = req.body;
+    let { noteTitle, collectionTitle, newNoteTitle, newNoteContent } = req.body;
 
     if (!noteTitle || !collectionTitle || !newNoteTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle, newNoteTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -372,12 +417,12 @@ async function updateNote(req, res, next) {
     const note = await Note.findOne({
         title: newNoteTitle,
         collectionID: collection._id.toString(),
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (note && noteTitle !== newNoteTitle) {
         return res.status(409).json({
             status: 409,
-            msg: 'There is already a note with that name in the collection.'
+            msg: "There is already a note with that name in the collection.",
         });
     }
 
@@ -385,25 +430,26 @@ async function updateNote(req, res, next) {
         {
             title: noteTitle,
             userID: res.locals.loggedUser.userID,
-            collectionID: collection._id.toString()
+            collectionID: collection._id.toString(),
         },
         {
             edited: Date.now(),
             content: newNoteContent,
-            title: newNoteTitle
-        }, {new: true}
+            title: newNoteTitle,
+        },
+        { new: true }
     );
 
     if (newNote) {
         return res.status(200).json({
             status: 200,
             msg: "Note updated.",
-            note: newNote
+            note: newNote,
         });
     } else
         return res.status(404).json({
             status: 404,
-            msg: "Could not update note."
+            msg: "Could not update note.",
         });
 }
 
@@ -411,49 +457,49 @@ async function updateNote(req, res, next) {
 router.post("/note/delete", deleteNote);
 
 async function deleteNote(req, res, next) {
-    let {noteTitle, collectionTitle} = req.body;
+    let { noteTitle, collectionTitle } = req.body;
 
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
     const deletedNote = await Note.findOneAndDelete({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (deletedNote) {
         return res.status(200).json({
             status: 200,
             msg: "Note deleted.",
-            note: deletedNote
+            note: deletedNote,
         });
     } else {
         return res.status(404).json({
             status: 404,
-            msg: "Could not delete note."
+            msg: "Could not delete note.",
         });
     }
 }
@@ -484,37 +530,37 @@ function uploadFile(req, res, next) {
     } else
         return res.status(422).json({
             status: 422,
-            msg: "File not found."
+            msg: "File not found.",
         });
 }
 
 // TODO: de adaugat o limita pt numarul maxim de atasamente la o nota (~10)
 async function addAttachment(req, res, next) {
-    let {noteTitle, collectionTitle} = req.body;
+    let { noteTitle, collectionTitle } = req.body;
 
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -522,12 +568,12 @@ async function addAttachment(req, res, next) {
     const note = await Note.findOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (!note) {
         return res.status(404).json({
             status: 404,
-            msg: "Could not find note."
+            msg: "Could not find note.",
         });
     }
 
@@ -538,12 +584,13 @@ async function addAttachment(req, res, next) {
         {
             title: noteTitle,
             userID: res.locals.loggedUser.userID,
-            collectionID: collection._id.toString()
+            collectionID: collection._id.toString(),
         },
         {
             edited: Date.now(),
-            attachments: oldAttachments
-        }, {new: true}
+            attachments: oldAttachments,
+        },
+        { new: true }
     );
 
     if (newNote) {
@@ -551,12 +598,12 @@ async function addAttachment(req, res, next) {
             status: 200,
             msg: "Attachment added to note.",
             photoURL: res.photoURL,
-            note: newNote
+            note: newNote,
         });
     } else {
         return res.status(500).json({
             status: 500,
-            msg: "Could not add attachment to note."
+            msg: "Could not add attachment to note.",
         });
     }
 }
@@ -565,31 +612,31 @@ async function addAttachment(req, res, next) {
 router.post("/note/attachment/delete", deleteAttachment);
 
 async function deleteAttachment(req, res, next) {
-    let {noteTitle, collectionTitle, photoURL} = req.body;
+    let { noteTitle, collectionTitle, photoURL } = req.body;
 
     if (!noteTitle || !collectionTitle || !photoURL) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -597,12 +644,12 @@ async function deleteAttachment(req, res, next) {
     const note = await Note.findOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (!note) {
         return res.status(404).json({
             status: 404,
-            msg: "Could not find note."
+            msg: "Could not find note.",
         });
     }
 
@@ -613,7 +660,7 @@ async function deleteAttachment(req, res, next) {
     } else {
         return res.status(404).json({
             status: 404,
-            msg: "Attachment not in the list."
+            msg: "Attachment not in the list.",
         });
     }
 
@@ -621,24 +668,25 @@ async function deleteAttachment(req, res, next) {
         {
             title: noteTitle,
             userID: res.locals.loggedUser.userID,
-            collectionID: collection._id.toString()
+            collectionID: collection._id.toString(),
         },
         {
             edited: Date.now(),
-            attachments: oldAttachments
-        }, {new: true}
+            attachments: oldAttachments,
+        },
+        { new: true }
     );
 
     if (newNote) {
         return res.status(200).json({
             status: 200,
             msg: "Attachment deleted from note.",
-            note: newNote
+            note: newNote,
         });
     } else {
         return res.status(500).json({
             status: 500,
-            msg: "Could not delete attachment from note."
+            msg: "Could not delete attachment from note.",
         });
     }
 }
@@ -648,31 +696,31 @@ router.post("/note/collaborator/add", addCollaborator);
 
 // TODO: de adaugat o limita pt numarul maxim de colaboratori la o nota (~5)
 async function addCollaborator(req, res, next) {
-    let {noteTitle, collectionTitle, collaboratorUsername} = req.body;
+    let { noteTitle, collectionTitle, collaboratorUsername } = req.body;
 
     if (!noteTitle || !collectionTitle || !collaboratorUsername) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -680,21 +728,21 @@ async function addCollaborator(req, res, next) {
     const note = await Note.findOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (!note) {
         return res.status(404).json({
             status: 404,
-            msg: "Could not find note."
+            msg: "Could not find note.",
         });
     }
 
     // Check if collaborator exists
-    const user = await User.findOne({username: collaboratorUsername});
+    const user = await User.findOne({ username: collaboratorUsername });
     if (!user) {
         return res.status(404).json({
             status: 404,
-            msg: "Collaborator does not exist."
+            msg: "Collaborator does not exist.",
         });
     }
 
@@ -702,14 +750,14 @@ async function addCollaborator(req, res, next) {
     if (note.collaborators.indexOf(collaboratorUsername) !== -1) {
         return res.status(409).json({
             status: 409,
-            msg: "Collaborator already added."
+            msg: "Collaborator already added.",
         });
     }
     // Check if collaborator is already the owner
     if (collaboratorUsername === res.locals.loggedUser.username) {
         return res.status(409).json({
             status: 409,
-            msg: "Collaborator is already owner."
+            msg: "Collaborator is already owner.",
         });
     }
 
@@ -720,24 +768,25 @@ async function addCollaborator(req, res, next) {
         {
             title: noteTitle,
             userID: res.locals.loggedUser.userID,
-            collectionID: collection._id.toString()
+            collectionID: collection._id.toString(),
         },
         {
             edited: Date.now(),
-            collaborators: oldCollaborators
-        }, {new: true}
+            collaborators: oldCollaborators,
+        },
+        { new: true }
     );
 
     if (newNote) {
         return res.status(200).json({
             status: 200,
             msg: "Collaborator added to note.",
-            note: newNote
+            note: newNote,
         });
     } else {
         return res.status(500).json({
             status: 500,
-            msg: "Could not add collaborator to note."
+            msg: "Could not add collaborator to note.",
         });
     }
 }
@@ -746,31 +795,31 @@ async function addCollaborator(req, res, next) {
 router.post("/note/collaborator/delete", deleteCollaborator);
 
 async function deleteCollaborator(req, res, next) {
-    let {noteTitle, collectionTitle, collaboratorUsername} = req.body;
+    let { noteTitle, collectionTitle, collaboratorUsername } = req.body;
 
     if (!noteTitle || !collectionTitle || !collaboratorUsername) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -778,21 +827,21 @@ async function deleteCollaborator(req, res, next) {
     const note = await Note.findOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (!note) {
         return res.status(404).json({
             status: 404,
-            msg: "Could not find note."
+            msg: "Could not find note.",
         });
     }
 
     // Check if collaborator exists
-    const user = await User.findOne({username: collaboratorUsername});
+    const user = await User.findOne({ username: collaboratorUsername });
     if (!user) {
         return res.status(404).json({
             status: 404,
-            msg: "Collaborator does not exist."
+            msg: "Collaborator does not exist.",
         });
     }
 
@@ -803,7 +852,7 @@ async function deleteCollaborator(req, res, next) {
     } else {
         return res.status(404).json({
             status: 404,
-            msg: "Collaborator not in the list."
+            msg: "Collaborator not in the list.",
         });
     }
 
@@ -811,24 +860,25 @@ async function deleteCollaborator(req, res, next) {
         {
             title: noteTitle,
             userID: res.locals.loggedUser.userID,
-            collectionID: collection._id.toString()
+            collectionID: collection._id.toString(),
         },
         {
             edited: Date.now(),
-            collaborators: oldCollaborators
-        }, {new: true}
+            collaborators: oldCollaborators,
+        },
+        { new: true }
     );
 
     if (newNote) {
         return res.status(200).json({
             status: 200,
             msg: "Collaborator deleted from note.",
-            note: newNote
+            note: newNote,
         });
     } else {
         return res.status(500).json({
             status: 500,
-            msg: "Could not delete collaborator from note."
+            msg: "Could not delete collaborator from note.",
         });
     }
 }
@@ -836,31 +886,31 @@ async function deleteCollaborator(req, res, next) {
 router.post("/note/share", getShareLink);
 
 async function getShareLink(req, res, next) {
-    const {noteTitle, collectionTitle} = req.body;
+    const { noteTitle, collectionTitle } = req.body;
 
     if (!noteTitle || !collectionTitle) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data missing."
+            msg: "Input data missing.",
         });
     }
 
     if (!checkRegex(noteTitle, collectionTitle)) {
         return res.status(422).json({
             status: 422,
-            msg: "Input data contains unaccepted characters."
+            msg: "Input data contains unaccepted characters.",
         });
     }
 
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
-        userID: res.locals.loggedUser.userID
+        userID: res.locals.loggedUser.userID,
     });
     if (!collection) {
         return res.status(404).json({
             status: 404,
-            msg: "Collection name invalid."
+            msg: "Collection name invalid.",
         });
     }
 
@@ -868,37 +918,38 @@ async function getShareLink(req, res, next) {
     const note = await Note.findOne({
         title: noteTitle,
         userID: res.locals.loggedUser.userID,
-        collectionID: collection._id.toString()
+        collectionID: collection._id.toString(),
     });
     if (!note) {
         return res.status(404).json({
             status: 404,
-            msg: "Could not find note."
+            msg: "Could not find note.",
         });
     }
-    if(note.link) {
+    if (note.link) {
         return res.status(200).json({
             status: 200,
-            msg: 'Link successfully fetched.',
-            link: note.link
+            msg: "Link successfully fetched.",
+            link: note.link,
         });
     } else {
-        const str = '/share/' + randomString.generate(20);
+        const str = "/share/" + randomString.generate(20);
         const newNote = await Note.findOneAndUpdate(
             {
                 title: noteTitle,
                 userID: res.locals.loggedUser.userID,
-                collectionID: collection._id.toString()
+                collectionID: collection._id.toString(),
             },
             {
                 edited: Date.now(),
-                link: str
-            }, {new: true}
+                link: str,
+            },
+            { new: true }
         );
         return res.status(201).json({
             status: 201,
-            msg: 'New link created.',
-            link: newNote.link
+            msg: "New link created.",
+            link: newNote.link,
         });
     }
 }
