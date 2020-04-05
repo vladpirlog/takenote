@@ -70,7 +70,7 @@ function authUser(req, res, next) {
                 {userID: user._id.toString(), username: user.username},
                 process.env.JWT_SECRET,
                 {expiresIn: "2h"});
-            res.cookie('jwt_auth', token, {expires: new Date(Date.now() + 3600000), httpOnly: true});
+            res.cookie('jwt_auth', token, {expires: new Date(Date.now() + 7200000), httpOnly: true});
             return res.status(200).json({
                 redirectPath: '/dashboard',
                 status: 200,
