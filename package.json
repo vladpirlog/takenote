@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "start": "pm2 start .\\bin\\www",
-    "test": "nodemon ./bin/www"
+    "test": "nodemon .\\bin\\www"
   },
   "dependencies": {
     "axios": "^0.19.2",
