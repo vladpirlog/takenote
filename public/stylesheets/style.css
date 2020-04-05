@@ -5,7 +5,7 @@
     --separator-height: 5px;
     --primary-color: #7fbf7f;
     --primary-color-dark: #649264;
-    --secondary-color: #404b40;
+	--secondary-color: #404b40;
     --light-color: #e5f2e5;
     --light-color-dark: #888;
     --light-color-darker: #555;
@@ -89,23 +89,24 @@ body {
 .dropdown {
     border: none;
     outline: none;
-    /*padding: 14px 12px;*/
+    padding: 8px 0;
     cursor: pointer;
 }
 
 .dropdown-content {
     position: absolute;
-    margin-top: 0;
+    margin-top: 6px;
     display: none;
     right: 2%;
     user-select: none;
     font-size: var(--font-size-large);
 }
 
+/* TODO: de modificat border-ul la dropdown content */
 .dropdown-content > * {
     border-radius: 5px;
     color: var(--dark-color);
-    padding: 8px 20px;
+    padding: 8px 12px;
     text-decoration: none;
     display: block;
     text-align: center;
@@ -119,7 +120,6 @@ body {
 
 .dropdown-element {
     background-color: var(--light-color);
-    /* background: #f8ffe8;*/
 }
 
 .dropdown-element:hover {
@@ -363,7 +363,7 @@ input {
     color: var(--light-color);
     display: block;
     border-radius: 5px;
-    background: var(--secondary-color);
+	background: var(--secondary-color);
 }
 
 .sidebar-tools {
