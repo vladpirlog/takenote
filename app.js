@@ -44,6 +44,7 @@ app.set("env", process.env.NODE_ENV);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
+app.disable('etag').disable('x-powered-by');
 app.use(logger(app.get("env") === "production" ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
