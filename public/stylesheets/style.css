@@ -354,7 +354,6 @@ input {
     z-index: 1;
     background-color: var(--dark-color);
     overflow-x: hidden;
-    padding: 4px 0;
 }
 
 .sidebar-container {
@@ -425,7 +424,7 @@ input {
     background-color: var(--dark-color);
 }
 
-/* ================== DASHBOARD ===================== */
+/* ================== DASHBOARD WORKSPACE ===================== */
 
 .dashboard-workspace {
     flex: 1;
@@ -611,7 +610,7 @@ input {
         display: flex;
         position: absolute;
         left: 0;
-        height: calc(100% - var(--navbar-height) - var(--separator-height));
+        height: calc(100vh - var(--navbar-height) - var(--separator-height));
     }
 
     .show-mobile {

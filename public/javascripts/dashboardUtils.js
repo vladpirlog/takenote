@@ -447,8 +447,13 @@ function closeSidebar() {
     }
 }
 
-window.onresize = () => {
-    if (window.innerWidth >= 900) {
-        sidebar.style = null;
-    }
-};
+// window.onorientationchange = window.onresize = () => {
+    // if (window.innerWidth >= 900) {
+    //     sidebar.style.height =
+    //         window.innerHeight > window.innerWidth
+    //             ? window.innerHeight
+    //             : window.innerWidth -
+    //               document.getElementsByClassName("navbar")[0].clientHeight -
+    //               document.getElementsByClassName("separator")[0].clientHeight;
+    // }
+// };
