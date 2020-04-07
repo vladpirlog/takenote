@@ -1,6 +1,10 @@
+# IDE folders
 proiect-tw.iml
 .idea/
 .vscode/
+
+# Testing files
+*.rest
 
 # Logs
 logs
