@@ -354,6 +354,7 @@ input {
     z-index: 1;
     background-color: var(--dark-color);
     overflow-x: hidden;
+    padding: 4px 0;
 }
 
 .sidebar-container {
@@ -424,6 +425,8 @@ input {
     background-color: var(--dark-color);
 }
 
+/* ================== DASHBOARD ===================== */
+
 .dashboard-workspace {
     flex: 1;
     font-size: 28px;
@@ -481,6 +484,10 @@ input {
     margin: 0 12px;
     cursor: pointer;
 }
+
+/* .dashboard-workspace-buttons > i {
+    display: none;
+} */
 
 .dashboard-workspace-buttons > i:not(.fa-trash):hover {
     color: var(--success-color);
@@ -598,13 +605,14 @@ input {
 
     .sidebar {
         display: none;
-        height: 100%;
     }
 
-    /* .note-title-field:empty:before,
-  .dashboard-workspace-textarea:empty:before {
-    content: none;
-  } */
+    .sidebar-open {
+        display: flex;
+        position: absolute;
+        left: 0;
+        height: calc(100% - var(--navbar-height) - var(--separator-height));
+    }
 
     .show-mobile {
         display: inline-block !important;

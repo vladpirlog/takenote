@@ -21,7 +21,7 @@ function getNote(ev) {
         .textContent.trim();
     axios
         .get(`/api/note/${collectionTitle}/${noteTitle}`)
-        .then(function(response) {
+        .then(function (response) {
             closeSidebar();
             modifyActiveNote(ev.target);
             sessionStorage.setItem(
@@ -30,7 +30,7 @@ function getNote(ev) {
             );
             displayNote(response.data.note);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -62,7 +62,7 @@ function addNote(ev) {
     form.append("noteTitle", `New Note(${newNoteIndex + 1})`);
     axios
         .post("/api/note/add", form)
-        .then(function(response) {
+        .then(function (response) {
             const containerElement = addNoteToContainer(
                 response.data.note,
                 container
@@ -74,7 +74,7 @@ function addNote(ev) {
             );
             displayNote(response.data.note);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -104,7 +104,7 @@ function updateNote() {
         );
         axios
             .post("/api/note/update", form)
-            .then(function(response) {
+            .then(function (response) {
                 sessionStorage.setItem(
                     "currentNote",
                     JSON.stringify(response.data.note)
@@ -112,10 +112,10 @@ function updateNote() {
                 document.querySelector(".active-note").textContent =
                     response.data.note.title;
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 alert(err.response.data.msg || "There was a problem.");
             })
-            .finally(function() {
+            .finally(function () {
                 saveToLoading(false);
             });
     } else {
@@ -130,7 +130,7 @@ function updateNote() {
             form.append("collectionTitle", temp[0].textContent.trim());
             axios
                 .post("/api/note/add", form)
-                .then(function(response) {
+                .then(function (response) {
                     const containerElement = addNoteToContainer(
                         response.data.note,
                         temp[0].parentElement
@@ -142,10 +142,10 @@ function updateNote() {
                     );
                     displayNote(response.data.note);
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     alert(err.response.data.msg || "There was a problem.");
                 })
-                .finally(function() {
+                .finally(function () {
                     saveToLoading(false);
                 });
         } else {
@@ -169,11 +169,11 @@ function deleteNote() {
         );
         axios
             .post("/api/note/delete", form)
-            .then(function(response) {
+            .then(function (response) {
                 let container = null;
                 document
                     .querySelectorAll(".sidebar-container-heading")
-                    .forEach(elem => {
+                    .forEach((elem) => {
                         if (
                             elem.textContent.trim() ===
                             JSON.parse(sessionStorage.getItem("currentNote"))
@@ -187,7 +187,7 @@ function deleteNote() {
                 resetDashboard();
                 modifyActiveNote(null);
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 alert(err.response.data.msg || "There was a problem.");
             });
     } else {
@@ -219,10 +219,10 @@ function addCollection() {
     form.append("collectionTitle", `New Col(${newColIndex + 1})`);
     axios
         .post("/api/collection/add", form)
-        .then(function(response) {
+        .then(function (response) {
             addContainer(response.data.collection);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -234,7 +234,7 @@ function deleteCollection(ev) {
     form.append("collectionTitle", collectionTitle);
     axios
         .post("/api/collection/delete", form)
-        .then(function(response) {
+        .then(function (response) {
             deleteContainer(response.data.collection);
             if (
                 JSON.parse(sessionStorage.getItem("currentNote"))
@@ -243,7 +243,7 @@ function deleteCollection(ev) {
                 sessionStorage.removeItem("currentNote");
             }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -255,27 +255,36 @@ function shareNote() {
     form.append("collectionTitle", note.collectionTitle);
     axios
         .post("/api/note/share", form)
-        .then(function(response) {
+        .then(function (response) {
             alert(
                 `The share link is ${window.location.origin}${response.data.link}`
             );
         })
-        .catch(function(err) {
+        .catch(function (err) {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
 
 // Initialize dashboard
-window.onload = function() {
+window.onload = () => {
     sessionStorage.clear();
 };
 axios
     .get("/api/user/collections?includeCollaborations=true")
     .then(initializeDashboard)
-    .catch(function(err) {
+    .catch(function (err) {
         alert(err.response.data.msg || "There was a problem.");
     });
 
+// TODO: de facut ca butoanele delete, share etc sa apara doar cand este o nota deschisa
+// window.onstorage = (ev) => {
+//     alert("lala");
+//     if (ev.storageArea === sessionStorage && ev.key == "currentNote") {
+//         document
+//             .querySelectorAll(".dashboard-workspace-buttons > i")
+//             .forEach((elem) => (elem.style.display = "inline-block"));
+//     }
+// };
 // ========================= FUNCTIONS FOR MODIFYING DISPLAYED DATA ======================
 
 // DISPLAY note content
@@ -368,7 +377,7 @@ function deleteNoteFromContainer(note, container) {
 function modifyActiveNote(containerElement) {
     const actives = document.querySelectorAll(".active-note");
     if (actives.length > 0)
-        actives.forEach(elem => {
+        actives.forEach((elem) => {
             elem.classList.remove("active-note");
             elem.onclick = getNote;
         });
@@ -415,16 +424,13 @@ function copyToClipboard() {
 }
 
 function isSidebarOpen() {
-    if (!sidebar.style.display) return false;
-    return sidebar.style.display !== "none";
+    if (!getComputedStyle(sidebar).display) return false;
+    return getComputedStyle(sidebar).display !== "none";
 }
 
 function openSidebar() {
+    sidebar.classList.add("sidebar-open");
     sidebar.classList.add("animate-open-sidebar");
-    sidebar.style.display = "flex";
-    sidebar.style.position = "absolute";
-    sidebar.style.left = "0";
-    sidebar.style.height = dashboardContent.scrollHeight;
     // TODO: de rezolvat inaltimea sidebar-ului pe mobil cu orientarea landscape
     setTimeout(() => {
         sidebar.classList.remove("animate-open-sidebar");
@@ -435,8 +441,8 @@ function closeSidebar() {
     if (window.innerWidth <= 900) {
         sidebar.classList.add("animate-close-sidebar");
         setTimeout(() => {
-            sidebar.style.display = "none";
             sidebar.classList.remove("animate-close-sidebar");
+            sidebar.classList.remove("sidebar-open");
         }, 160);
     }
 }
