@@ -7,7 +7,6 @@ const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const randomString = require("randomstring");
 // TODO: de adaugat functii pt a reduce codul duplicat
-// TODO: de adaugat limita pt lungimea titlului
 // TODO: de adugat autorizarea pt note la care esti colaborator
 
 // GET all collections of a user; collaborating notes can be included too
@@ -332,6 +331,12 @@ async function addNote(req, res, next) {
         });
     }
 
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
+
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
@@ -400,6 +405,12 @@ async function updateNote(req, res, next) {
             msg: "Input data contains unaccepted characters.",
         });
     }
+
+    if (noteTitle.length > 20 || newNoteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
 
     // Check if collection exists
     const collection = await Collection.findOne({
@@ -472,6 +483,12 @@ async function deleteNote(req, res, next) {
             msg: "Input data contains unaccepted characters.",
         });
     }
+
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
 
     // Check if collection exists
     const collection = await Collection.findOne({
@@ -552,6 +569,12 @@ async function addAttachment(req, res, next) {
         });
     }
 
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
+
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
@@ -627,6 +650,12 @@ async function deleteAttachment(req, res, next) {
             msg: "Input data contains unaccepted characters.",
         });
     }
+
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
 
     // Check if collection exists
     const collection = await Collection.findOne({
@@ -711,6 +740,12 @@ async function addCollaborator(req, res, next) {
             msg: "Input data contains unaccepted characters.",
         });
     }
+
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
 
     // Check if collection exists
     const collection = await Collection.findOne({
@@ -811,6 +846,12 @@ async function deleteCollaborator(req, res, next) {
         });
     }
 
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
+
     // Check if collection exists
     const collection = await Collection.findOne({
         title: collectionTitle,
@@ -901,6 +942,12 @@ async function getShareLink(req, res, next) {
             msg: "Input data contains unaccepted characters.",
         });
     }
+
+    if (noteTitle.length > 20)
+        return res.status(422).json({
+            status: 422,
+            msg: "Note title too long.",
+        });
 
     // Check if collection exists
     const collection = await Collection.findOne({
