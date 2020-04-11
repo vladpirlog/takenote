@@ -11,8 +11,4 @@
             .dropdown-content.animate
                 a.dropdown-element(href='/') Home
                 a.dropdown-element(href='/dashboard') Dashboard
-                span.dropdown-logout#logout-button Logout
-    else
-        #open-login.navbar-elem.no-select= 'Login  '
-            i.fas.fa-sign-in-alt
-        include login_modal
+                span.dropdown-logout.logout-button(onclick='logout();') Logout

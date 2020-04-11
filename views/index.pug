@@ -18,29 +18,54 @@ block content
             //- TODO: de adaugat o imagine/ceva dinamic in partea stanga a homepage-ului
         if !isAuthenticated
             .index-register
-                .index-register-header= 'Register  '
+                .index-card-header= 'Register  '
                     i.fas.fa-user-plus
-                .index-register-left
-                form.index-register-middle#register-form
-                    label(for='username')
-                        b Username
-                    input#username.input-field(type='text', placeholder='Enter Username', name='username')
-                    label(for='email')
-                        b Email
-                    input#email.input-field(type='text', placeholder='Enter Email', name='email')
-                    label(for='password')
-                        b Password
-                    input#password.input-field(type='password', placeholder='Enter Password', name='password')
-                    label(for='confirm_password')
-                        b Confirm Password
-                    input#confirm_password.input-field(type='password', placeholder='Confirm Password', name='confirm_password')
-                .index-register-right
-                .index-register-footer
-                    #submit-register.bttn Register
-                    .bttn(onclick='document.getElementById("open-login").click();')
+                .index-card-left
+                form.index-card-middle#register-form
+                    .index-card-middle-element
+                        label(for='username')
+                            b Username
+                        input#username(type='text', placeholder='Enter Username', name='username')
+                    .index-card-middle-element
+                        label(for='email')
+                            b Email
+                        input#email(type='text', placeholder='Enter Email', name='email')
+                    .index-card-middle-element
+                        label(for='password')
+                            b Password
+                        input#password(type='password', placeholder='Enter Password', name='password')
+                    .index-card-middle-element
+                        label(for='confirm_password')
+                            b Confirm Password
+                        input#confirm_password(type='password', placeholder='Confirm Password', name='confirm_password')
+                .index-card-right
+                .index-card-footer
+                    #submit-register.bttn(onclick='register();') Register
+                    .bttn(onclick='openLogin();')
                         | Go to Login
+            .index-login
+                .index-card-header= 'Login  '
+                    i.fas.fa-sign-in-alt
+                .index-card-left
+                form.index-card-middle#login-form
+                    .index-card-middle-element
+                        label(for='login-email')
+                            b Username/Email
+                        input#login-email(type='text', placeholder='Enter Username/Email', name='email')
+                    .index-card-middle-element
+                        label(for='login-password')
+                            b Password
+                        input#login-password(type='password', placeholder='Enter Password', name='password')
+                .index-card-right
+                .index-card-footer
+                    #submit-login.bttn(onclick='login();') Login
+                    .bttn(onclick='openRegister();')
+                        | Go to Register
         else
             .index-info
-                h1 Hello
+                div= 'Hello, ' + loggedUser.username + '!'
+                a.index-bttn(href='/dashboard') Dashboard
+                a.index-bttn.index-bttn-logout.logout-button(onclick='logout();') Logout
                 //- TODO: de adaugat un element in locul ferestrei de register cand user-ul este logat
+    script(src='/javascripts/userUtils.js')
                 
