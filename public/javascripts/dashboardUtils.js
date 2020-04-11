@@ -13,6 +13,28 @@ const noteTitleField = document.getElementsByClassName("note-title-field")[0];
 
 // ============================= FUNCTIONS FOR FETCHING DATA/INTERACTING WITH THE BACKEND ===========================
 
+// Initialize dashboard
+window.onload = () => {
+    displayWorkspaceButtons(false);
+    sessionStorage.clear();
+};
+axios
+    .get("/api/user/collections?includeCollaborations=true")
+    .then(initializeDashboard)
+    .catch((err) => {
+        alert(err.response.data.msg || "There was a problem.");
+    });
+
+noteTitleField.addEventListener("keydown", limitTitleLength);
+
+function limitTitleLength(ev) {
+    if (
+        this.textContent.length >= 20 &&
+        ![8, 9, 37, 38, 39, 40].includes(ev.keyCode)
+    )
+        ev.preventDefault();
+}
+
 // GET note content
 function getNote(ev) {
     const noteTitle = ev.target.textContent;
@@ -21,16 +43,17 @@ function getNote(ev) {
         .textContent.trim();
     axios
         .get(`/api/note/${collectionTitle}/${noteTitle}`)
-        .then(function (response) {
-            closeSidebar();
+        .then((response) => {
             modifyActiveNote(ev.target);
             sessionStorage.setItem(
                 "currentNote",
                 JSON.stringify(response.data.note)
             );
+            displayWorkspaceButtons(true);
             displayNote(response.data.note);
+            closeSidebar();
         })
-        .catch(function (err) {
+        .catch((err) => {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -43,26 +66,28 @@ function addNote(ev) {
     form.append("collectionTitle", collectionTitle);
     // Set the title of the new note to be "New Note(<number>)"
     let newNoteIndex = 0;
-    for (let elem of container.querySelectorAll(".sidebar-container-element")) {
-        if (elem.textContent.trim().match(/^New Note\([0-9]*\)$/)) {
-            let x = parseInt(
-                elem.textContent
+    const arr = Array.prototype.filter
+        .call(container.querySelectorAll(".sidebar-container-element"), (el) =>
+            el.textContent.trim().match(/^New Note\([0-9]*\)$/)
+        )
+        .map((el) =>
+            parseInt(
+                el.textContent
                     .trim()
                     .slice(
-                        1 + elem.textContent.trim().indexOf("("),
-                        elem.textContent.trim().indexOf(")")
+                        1 + el.textContent.trim().indexOf("("),
+                        el.textContent.trim().indexOf(")")
                     ),
                 10
-            );
-            if (newNoteIndex < x) {
-                newNoteIndex = x;
-            }
-        }
+            )
+        );
+    if (arr.length > 0) {
+        newNoteIndex = Math.max.apply(null, arr);
     }
     form.append("noteTitle", `New Note(${newNoteIndex + 1})`);
     axios
         .post("/api/note/add", form)
-        .then(function (response) {
+        .then((response) => {
             const containerElement = addNoteToContainer(
                 response.data.note,
                 container
@@ -72,9 +97,11 @@ function addNote(ev) {
                 "currentNote",
                 JSON.stringify(response.data.note)
             );
+            displayWorkspaceButtons(true);
             displayNote(response.data.note);
+            closeSidebar();
         })
-        .catch(function (err) {
+        .catch((err) => {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -104,7 +131,7 @@ function updateNote() {
         );
         axios
             .post("/api/note/update", form)
-            .then(function (response) {
+            .then((response) => {
                 sessionStorage.setItem(
                     "currentNote",
                     JSON.stringify(response.data.note)
@@ -112,10 +139,10 @@ function updateNote() {
                 document.querySelector(".active-note").textContent =
                     response.data.note.title;
             })
-            .catch(function (err) {
+            .catch((err) => {
                 alert(err.response.data.msg || "There was a problem.");
             })
-            .finally(function () {
+            .finally(() => {
                 saveToLoading(false);
             });
     } else {
@@ -130,7 +157,7 @@ function updateNote() {
             form.append("collectionTitle", temp[0].textContent.trim());
             axios
                 .post("/api/note/add", form)
-                .then(function (response) {
+                .then((response) => {
                     const containerElement = addNoteToContainer(
                         response.data.note,
                         temp[0].parentElement
@@ -140,12 +167,14 @@ function updateNote() {
                         "currentNote",
                         JSON.stringify(response.data.note)
                     );
+                    displayWorkspaceButtons(true);
                     displayNote(response.data.note);
+                    closeSidebar();
                 })
-                .catch(function (err) {
+                .catch((err) => {
                     alert(err.response.data.msg || "There was a problem.");
                 })
-                .finally(function () {
+                .finally(() => {
                     saveToLoading(false);
                 });
         } else {
@@ -169,7 +198,7 @@ function deleteNote() {
         );
         axios
             .post("/api/note/delete", form)
-            .then(function (response) {
+            .then((response) => {
                 let container = null;
                 document
                     .querySelectorAll(".sidebar-container-heading")
@@ -186,12 +215,13 @@ function deleteNote() {
                 sessionStorage.removeItem("currentNote");
                 resetDashboard();
                 modifyActiveNote(null);
+                displayWorkspaceButtons(false);
             })
-            .catch(function (err) {
+            .catch((err) => {
                 alert(err.response.data.msg || "There was a problem.");
             });
     } else {
-        alert("There was a problem.");
+        alert(err.response.data.msg || "There was a problem.");
     }
 }
 
@@ -199,30 +229,33 @@ function deleteNote() {
 function addCollection() {
     // Set the title of the new note to be "New Note(<number>)"
     let newColIndex = 0;
-    for (let elem of document.querySelectorAll(".sidebar-container-heading")) {
-        if (elem.textContent.trim().match(/^New Col\([0-9]*\)$/)) {
-            let x = parseInt(
-                elem.textContent
+    let arr = Array.prototype.filter
+        .call(document.querySelectorAll(".sidebar-container-heading"), (el) =>
+            el.textContent.trim().match(/^New Col\([0-9]*\)$/)
+        )
+        .map((el) =>
+            parseInt(
+                el.textContent
                     .trim()
                     .slice(
-                        1 + elem.textContent.trim().indexOf("("),
-                        elem.textContent.trim().indexOf(")")
+                        1 + el.textContent.trim().indexOf("("),
+                        el.textContent.trim().indexOf(")")
                     ),
                 10
-            );
-            if (newColIndex < x) {
-                newColIndex = x;
-            }
-        }
+            )
+        );
+    if (arr.length > 0) {
+        newColIndex = Math.max.apply(null, arr);
     }
+
     const form = new FormData();
     form.append("collectionTitle", `New Col(${newColIndex + 1})`);
     axios
         .post("/api/collection/add", form)
-        .then(function (response) {
+        .then((response) => {
             addContainer(response.data.collection);
         })
-        .catch(function (err) {
+        .catch((err) => {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -234,16 +267,20 @@ function deleteCollection(ev) {
     form.append("collectionTitle", collectionTitle);
     axios
         .post("/api/collection/delete", form)
-        .then(function (response) {
+        .then((response) => {
             deleteContainer(response.data.collection);
             if (
+                sessionStorage.getItem("currentNote") &&
                 JSON.parse(sessionStorage.getItem("currentNote"))
                     .collectionTitle === collectionTitle
             ) {
                 sessionStorage.removeItem("currentNote");
+                displayWorkspaceButtons(false);
+                resetDashboard();
+                modifyActiveNote(null);
             }
         })
-        .catch(function (err) {
+        .catch((err) => {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
@@ -255,36 +292,16 @@ function shareNote() {
     form.append("collectionTitle", note.collectionTitle);
     axios
         .post("/api/note/share", form)
-        .then(function (response) {
+        .then((response) => {
             alert(
                 `The share link is ${window.location.origin}${response.data.link}`
             );
         })
-        .catch(function (err) {
+        .catch((err) => {
             alert(err.response.data.msg || "There was a problem.");
         });
 }
 
-// Initialize dashboard
-window.onload = () => {
-    sessionStorage.clear();
-};
-axios
-    .get("/api/user/collections?includeCollaborations=true")
-    .then(initializeDashboard)
-    .catch(function (err) {
-        alert(err.response.data.msg || "There was a problem.");
-    });
-
-// TODO: de facut ca butoanele delete, share etc sa apara doar cand este o nota deschisa
-// window.onstorage = (ev) => {
-//     alert("lala");
-//     if (ev.storageArea === sessionStorage && ev.key == "currentNote") {
-//         document
-//             .querySelectorAll(".dashboard-workspace-buttons > i")
-//             .forEach((elem) => (elem.style.display = "inline-block"));
-//     }
-// };
 // ========================= FUNCTIONS FOR MODIFYING DISPLAYED DATA ======================
 
 // DISPLAY note content
@@ -294,9 +311,7 @@ function displayNote(note) {
 }
 
 function initializeDashboard(response) {
-    for (let col of response.data.collections) {
-        addContainer(col);
-    }
+    response.data.collections.forEach(addContainer);
     sidebar.scrollTop = 0;
 }
 
@@ -312,14 +327,12 @@ function addContainer(collection) {
     let containerTools = document.createElement("div");
     containerTools.classList.add("sidebar-container-tools");
     containerTools.innerHTML =
-        '<i class="fas fa-plus" onclick="addNote(this)"></i>' +
-        '<i class="fas fa-trash" onclick="deleteCollection(this)"></i>';
+        '<i class="fas fa-plus no-select" onclick="addNote(this)"></i>' +
+        '<i class="fas fa-trash no-select" onclick="deleteCollection(this)"></i>';
     containerHeading.appendChild(containerTools);
     container.appendChild(containerHeading);
     if (collection.notes) {
-        for (let note of collection.notes) {
-            addNoteToContainer(note, container);
-        }
+        collection.notes.forEach((note) => addNoteToContainer(note, container));
     }
     sidebar.appendChild(container);
     sidebar.scrollTop = sidebar.scrollHeight;
@@ -327,23 +340,17 @@ function addContainer(collection) {
 }
 
 function deleteContainer(collection) {
-    const containerHeadings = document.querySelectorAll(
-        ".sidebar-container-heading"
-    );
-    let toDelete;
-    for (let h of containerHeadings) {
-        if (h.textContent.trim() === collection.title) {
-            toDelete = h.parentElement;
-            break;
-        }
-    }
-
-    if (toDelete) {
-        toDelete.classList.add("animate-out");
-        setTimeout(() => {
-            toDelete.parentElement.removeChild(toDelete);
-        }, 300);
-    }
+    Array.prototype.filter
+        .call(
+            document.querySelectorAll(".sidebar-container-heading"),
+            (h) => h.textContent.trim() === collection.title
+        )
+        .forEach((h) => {
+            h.parentElement.classList.add("animate-out");
+            setTimeout(() => {
+                h.parentElement.parentElement.removeChild(h.parentElement);
+            }, 300);
+        });
 }
 
 function addNoteToContainer(note, container) {
@@ -352,35 +359,31 @@ function addNoteToContainer(note, container) {
     containerElement.classList.add("animate");
     containerElement.classList.add("no-select");
     containerElement.textContent = note.title;
+    // containerElement.textContent = note.title.length > 10 ? note.title.slice(0, 10) + "..." : note.title;
     containerElement.onclick = getNote;
     container.appendChild(containerElement);
     return containerElement;
 }
 
 function deleteNoteFromContainer(note, container) {
-    const elements = container.querySelectorAll(".sidebar-container-element");
-    let toDelete;
-    for (let el of elements) {
-        if (el.textContent.trim() === note.title) {
-            toDelete = el;
-            break;
-        }
-    }
-    if (toDelete) {
-        toDelete.classList.add("animate-out");
-        setTimeout(() => {
-            toDelete.parentElement.removeChild(toDelete);
-        }, 300);
-    }
+    Array.prototype.filter
+        .call(
+            container.querySelectorAll(".sidebar-container-element"),
+            (el) => el.textContent.trim() === note.title
+        )
+        .forEach((el) => {
+            el.classList.add("animate-out");
+            setTimeout(() => {
+                el.parentElement.removeChild(el);
+            }, 300);
+        });
 }
 
 function modifyActiveNote(containerElement) {
-    const actives = document.querySelectorAll(".active-note");
-    if (actives.length > 0)
-        actives.forEach((elem) => {
-            elem.classList.remove("active-note");
-            elem.onclick = getNote;
-        });
+    document.querySelectorAll(".active-note").forEach((el) => {
+        el.classList.remove("active-note");
+        el.onclick = getNote;
+    });
     if (containerElement) {
         containerElement.classList.add("active-note");
         containerElement.onclick = null;
@@ -396,11 +399,15 @@ function saveToLoading(val) {
     if (val) {
         saveButton.innerHTML =
             '<i class="fas fa-spinner animate-rotation-clockwise"></i>';
-        saveButton.style.backgroundColor = "var(--info-color)";
+        saveButton.style.backgroundColor = getComputedStyle(
+            document.body
+        ).getPropertyValue("--info-color");
         saveButton.onclick = null;
     } else {
         saveButton.innerHTML = '<i class="fas fa-save"></i>';
-        saveButton.style.backgroundColor = "var(--success-color)";
+        saveButton.style.backgroundColor = getComputedStyle(
+            document.body
+        ).getPropertyValue("--success-color");
         saveButton.onclick = updateNote;
     }
 }
@@ -447,13 +454,8 @@ function closeSidebar() {
     }
 }
 
-// window.onorientationchange = window.onresize = () => {
-    // if (window.innerWidth >= 900) {
-    //     sidebar.style.height =
-    //         window.innerHeight > window.innerWidth
-    //             ? window.innerHeight
-    //             : window.innerWidth -
-    //               document.getElementsByClassName("navbar")[0].clientHeight -
-    //               document.getElementsByClassName("separator")[0].clientHeight;
-    // }
-// };
+function displayWorkspaceButtons(val) {
+    document
+        .querySelectorAll(".dashboard-workspace-buttons > i")
+        .forEach((el) => (el.style.display = val ? "inline-block" : "none"));
+}
