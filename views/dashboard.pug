@@ -7,7 +7,7 @@ block content
                 i.fas.fa-plus
         .dashboard-workspace
             .dashboard-workspace-tools
-                .note-title-field.animate-focus(contenteditable='true' data-placeholder='Write title here' spellcheck='false')
+                .note-title-field.animate-focus(contenteditable='true' data-placeholder='Title' spellcheck='false')
                 .dashboard-workspace-buttons
                     i.fas.fa-share-alt.no-select(onclick='shareNote();')
                     i.fas.fa-copy.no-select(onclick='copyContentToClipboard();')
@@ -15,6 +15,6 @@ block content
                     i.fas.fa-trash.no-select(onclick='deleteNote();')
                     .save-button.no-select(onclick='updateNote();')
                         i.fas.fa-save
-            .dashboard-workspace-textarea-bg
-                .dashboard-workspace-textarea.animate-focus(contenteditable='true' data-placeholder='...and the note content here :D' spellcheck='false')
+            .dashboard-workspace-textarea-bg TakeNote
+                .dashboard-workspace-textarea.animate-focus(contenteditable='true' data-placeholder='...content' spellcheck='false')
     script(src='javascripts/dashboardUtils.js')

@@ -367,7 +367,7 @@ input {
 .bttn:hover {
     background-color: var(--light-color-dark);
 }
-
+/* 
 .form-field-column {
     flex: 1;
     margin: 12px 8px;
@@ -395,7 +395,7 @@ input {
     color: var(--dark-color);
     text-decoration: none;
     cursor: pointer;
-}
+} */
 
 /*================= DASHBOARD STYLING ===================*/
 
@@ -545,25 +545,31 @@ input {
 
 .dashboard-workspace-textarea-bg {
     background: var(--secondary-color);
-    flex:1;
+    flex: 1;
     padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: var(--light-color-darker);
+    font-size: 12vmin;
 }
 
 .dashboard-workspace-textarea {
     padding: 10px;
-    /* flex: 1; */
     font-size: var(--font-size-large);
     overflow: scroll;
     outline: none;
     background: transparent;
-    /* background: url("../images/favicon.ico") no-repeat;
-    background-position: center; */
-    position: relative;
-    width: inherit;
-    height: calc(100% - 2 * 10px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 2 * 10px - 2 * 4px);
+    height: calc(100% - 2 * 10px - 2 * 4px);
+    color: var(--light-color);
 }
 
-/*TODO: de facut background-ul la textarea*/
 .animate {
     animation: animatezoom 0.3s forwards;
 }
@@ -751,6 +757,7 @@ input {
     to {
         border-radius: 5px;
         border-color: var(--light-color);
+        background: var(--secondary-color);
     }
 }
 
