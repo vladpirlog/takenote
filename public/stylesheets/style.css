@@ -32,10 +32,11 @@ body {
     flex-direction: column;
     margin: 0;
     padding: 0;
+    /* background: var(--primary-color); */
     background: radial-gradient(
         ellipse at center,
-        var(--light-color) 0%,
-        var(--primary-color) 100%
+        var(--primary-color) 0%,
+        var(--primary-color-dark) 100%
     );
     font-size: var(--font-size-small);
     font-family: var(--font-family), sans-serif;
@@ -67,11 +68,6 @@ input {
     padding: 0 var(--navbar-padding);
     flex-shrink: 0;
     background: var(--dark-color);
-    /* background: linear-gradient(
-        to bottom,
-        var(--light-color-darker) 0%,
-        var(--dark-color) 100%
-    ); */
 }
 
 .navbar-elem {
@@ -79,29 +75,44 @@ input {
     text-decoration: none;
 }
 
-.error-list {
+.error-list,
+.notification-list {
     position: fixed;
     top: 0;
-    left: calc(50% - var(--error-list-width) / 2);
-    background: var(--danger-color);
-    width: var(--error-list-width);
+    left: 0;
+    right: 0;
+    margin: auto;
     z-index: 2;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    width: var(--error-list-width);
+    border-radius: 8px;
     height: fit-content;
-    animation: animateslidedown 0.4s linear forwards;
+    box-shadow: 2px -2px 2px rgba(0, 0, 0, 0.6);
 }
 
-.error {
+.error-list {
+    background: var(--danger-color);
+}
+
+.notification-list {
+    background: var(--success-color);
+}
+
+.error,
+.notification {
     cursor: default;
     padding: 8px 12px;
     margin: 0;
     text-align: center;
     font-weight: bold;
+    border-radius: 8px;
 }
 
 .error:hover {
     background: var(--danger-color-dark);
+}
+
+.notification:hover {
+    background: var(--success-color-dark);
 }
 
 .navbar-elem .fa-bars {
@@ -176,14 +187,12 @@ input {
 
 /* INDEX PAGE CONTENT */
 .index-content {
-    padding: 2% 6%;
-    margin: 0;
+    margin: 3% 8%;
     color: var(--dark-color);
     flex: 1;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: stretch;
 }
 
 .index-text {
@@ -193,31 +202,21 @@ input {
 
 .index-register,
 .index-login {
-    flex-basis: 30%;
+    display: grid;
+    grid-template-columns: 1fr 80% 1fr;
+    grid-template-rows: 15% 1fr 12%;
+    grid-template-areas:
+        "index-card-header index-card-header index-card-header"
+        "index-card-left index-card-middle index-card-right"
+        "index-card-footer index-card-footer index-card-footer";
+    flex-basis: 28%;
     box-shadow: 5px -5px 5px rgba(0, 0, 0, 0.6);
     border-radius: 8px;
-    min-height: 30rem;
+    min-height: 24rem;
     max-height: 40rem;
 }
-
-.index-register {
-    display: grid;
-    grid-template-columns: 1fr 80% 1fr;
-    grid-template-rows: 15% 1fr 12%;
-    grid-template-areas:
-        "index-card-header index-card-header index-card-header"
-        "index-card-left index-card-middle index-card-right"
-        "index-card-footer index-card-footer index-card-footer";
-}
-
 .index-login {
-    display: grid;
-    grid-template-columns: 1fr 80% 1fr;
-    grid-template-rows: 15% 1fr 12%;
-    grid-template-areas:
-        "index-card-header index-card-header index-card-header"
-        "index-card-left index-card-middle index-card-right"
-        "index-card-footer index-card-footer index-card-footer";
+    display: none;
 }
 
 .index-info {
@@ -304,12 +303,13 @@ input {
 
 .index-card-footer {
     grid-area: index-card-footer;
+    padding: 0 6%;
     background-color: var(--dark-color);
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -462,8 +462,7 @@ input {
     overflow: hidden;
 }
 
-.active-note,
-.active-note:hover {
+.active-note {
     border-radius: 5px;
     background-color: var(--dark-color);
 }
@@ -553,7 +552,6 @@ input {
 }
 
 /*TODO: de facut background-ul la textarea*/
-/* TODO: de animat erorile de login/register (de preferat cu modals) */
 .animate {
     animation: animatezoom 0.3s forwards;
 }
@@ -582,6 +580,22 @@ input {
 
 .animate-close-sidebar {
     animation: animateclosesidebar 0.1s linear forwards;
+}
+
+.animate-slide-down {
+    animation: animateslidedown 0.2s linear forwards;
+}
+
+.animate-slide-up {
+    animation: animateslideup 0.2s linear forwards;
+}
+
+.animate-flip {
+    animation: animateflip 0.15s linear forwards;
+}
+
+.animate-flip-out {
+    animation: animateflipout 0.15s linear forwards;
 }
 
 /* CUSTOM SCROLLBAR (ONLY ON CHROME AND SAFARI) */
@@ -618,7 +632,7 @@ input {
 
     .index-content {
         flex-direction: column;
-        padding: 6%;
+        margin: 6%;
     }
 
     .index-register,
@@ -628,7 +642,7 @@ input {
     }
 
     .index-content > * {
-        margin-bottom: 8%;
+        margin-bottom: 4%;
     }
 
     .sidebar {
@@ -696,6 +710,11 @@ input {
         border-radius: 5px;
         cursor: pointer;
     }
+
+    .active-note:hover {
+        border-radius: 5px;
+        background-color: var(--dark-color);
+    }
 }
 
 @keyframes animatezoom {
@@ -749,9 +768,50 @@ input {
 
 @keyframes animateslidedown {
     from {
-        top: -250px;
+        opacity: 0;
+        top: 0;
     }
     to {
+        opacity: 1;
+        top: 3vh;
+    }
+}
+
+@keyframes animateslideup {
+    from {
+        opacity: 1;
+        top: 3vh;
+    }
+    to {
+        opacity: 0;
         top: 0;
+    }
+}
+
+@keyframes animateflip {
+    from {
+        opacity: 0;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transform: rotateY(180deg);
+    }
+    to {
+        opacity: 1;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+}
+
+@keyframes animateflipout {
+    from {
+        opacity: 1;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    to {
+        opacity: 0;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transform: rotateY(180deg);
     }
 }

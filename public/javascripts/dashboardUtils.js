@@ -22,7 +22,9 @@ axios
     .get("/api/user/collections?includeCollaborations=true")
     .then(initializeDashboard)
     .catch((err) => {
-        alert(err.response.data.msg || "There was a problem.");
+        errorHandler([
+            { msg: err.response.data.msg || "There was a problem." },
+        ]);
     });
 
 noteTitleField.addEventListener("keydown", limitTitleLength);
@@ -54,7 +56,9 @@ function getNote(ev) {
             closeSidebar();
         })
         .catch((err) => {
-            alert(err.response.data.msg || "There was a problem.");
+            errorHandler([
+                { msg: err.response.data.msg || "There was a problem." },
+            ]);
         });
 }
 
@@ -100,16 +104,19 @@ function addNote(ev) {
             displayWorkspaceButtons(true);
             displayNote(response.data.note);
             closeSidebar();
+            notificationHandler([{ msg: "Note created." }], 2000);
         })
         .catch((err) => {
-            alert(err.response.data.msg || "There was a problem.");
+            errorHandler([
+                { msg: err.response.data.msg || "There was a problem." },
+            ]);
         });
 }
 
 // UPDATE a note when the save button is clicked
 function updateNote() {
     if (noteTitleField.textContent === "") {
-        alert("Note title cannot be empty.");
+        errorHandler([{ msg: "Note title cannot be empty." }]);
         return;
     }
     saveToLoading(true);
@@ -138,9 +145,12 @@ function updateNote() {
                 );
                 document.querySelector(".active-note").textContent =
                     response.data.note.title;
+                notificationHandler([{ msg: "Note saved." }], 2000);
             })
             .catch((err) => {
-                alert(err.response.data.msg || "There was a problem.");
+                errorHandler([
+                    { msg: err.response.data.msg || "There was a problem." },
+                ]);
             })
             .finally(() => {
                 saveToLoading(false);
@@ -170,15 +180,21 @@ function updateNote() {
                     displayWorkspaceButtons(true);
                     displayNote(response.data.note);
                     closeSidebar();
+                    notificationHandler([{ msg: "Note created." }], 2000);
                 })
                 .catch((err) => {
-                    alert(err.response.data.msg || "There was a problem.");
+                    errorHandler([
+                        {
+                            msg:
+                                err.response.data.msg || "There was a problem.",
+                        },
+                    ]);
                 })
                 .finally(() => {
                     saveToLoading(false);
                 });
         } else {
-            alert("No collection to add note to.");
+            errorHandler([{ msg: "No collection to add note to." }]);
             saveToLoading(false);
         }
     }
@@ -216,12 +232,17 @@ function deleteNote() {
                 resetDashboard();
                 modifyActiveNote(null);
                 displayWorkspaceButtons(false);
+                notificationHandler([{ msg: "Note deleted." }], 2000);
             })
             .catch((err) => {
-                alert(err.response.data.msg || "There was a problem.");
+                errorHandler([
+                    { msg: err.response.data.msg || "There was a problem." },
+                ]);
             });
     } else {
-        alert(err.response.data.msg || "There was a problem.");
+        errorHandler([
+            { msg: err.response.data.msg || "There was a problem." },
+        ]);
     }
 }
 
@@ -254,9 +275,12 @@ function addCollection() {
         .post("/api/collection/add", form)
         .then((response) => {
             addContainer(response.data.collection);
+            notificationHandler([{ msg: "Collection created." }], 2000);
         })
         .catch((err) => {
-            alert(err.response.data.msg || "There was a problem.");
+            errorHandler([
+                { msg: err.response.data.msg || "There was a problem." },
+            ]);
         });
 }
 
@@ -278,10 +302,13 @@ function deleteCollection(ev) {
                 displayWorkspaceButtons(false);
                 resetDashboard();
                 modifyActiveNote(null);
+                notificationHandler([{ msg: "Collection deleted." }], 2000);
             }
         })
         .catch((err) => {
-            alert(err.response.data.msg || "There was a problem.");
+            errorHandler([
+                { msg: err.response.data.msg || "There was a problem." },
+            ]);
         });
 }
 
@@ -293,12 +320,22 @@ function shareNote() {
     axios
         .post("/api/note/share", form)
         .then((response) => {
-            alert(
-                `The share link is ${window.location.origin}${response.data.link}`
+            copyTextToClipboard(
+                `${window.location.origin}${response.data.link}`
+            );
+            notificationHandler(
+                [
+                    {
+                        msg: `Share link copied to clipboard.`,
+                    },
+                ],
+                5000
             );
         })
         .catch((err) => {
-            alert(err.response.data.msg || "There was a problem.");
+            errorHandler([
+                { msg: err.response.data.msg || "There was a problem." },
+            ]);
         });
 }
 
@@ -412,7 +449,7 @@ function saveToLoading(val) {
     }
 }
 
-function copyToClipboard() {
+function copyContentToClipboard() {
     if (document.body.createTextRange) {
         let range = document.body.createTextRange();
         range.moveToElementText(dashBoardWorkspaceTextarea);
@@ -428,6 +465,16 @@ function copyToClipboard() {
         document.execCommand("Copy");
         selection.removeAllRanges();
     }
+    notificationHandler([{ msg: "Note content copied to clipboard." }]);
+}
+
+function copyTextToClipboard(str) {
+    const el = document.createElement("textarea");
+    el.value = str;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
 }
 
 function isSidebarOpen() {

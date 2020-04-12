@@ -2,28 +2,51 @@ const submitRegister = document.getElementById("submit-register");
 const registerForm = document.getElementById("register-form");
 const submitLogin = document.getElementById("submit-login");
 const loginForm = document.getElementById("login-form");
-let displayErrors = false;
+let displayInfo = false;
 
 const indexRegister = document.getElementsByClassName("index-register")[0];
 const indexLogin = document.getElementsByClassName("index-login")[0];
-if (indexLogin) indexLogin.style.display = "none";
 
 function openLogin() {
-    indexRegister.style.display = "none";
-    indexLogin.style.display = "grid";
+    clearFields();
+    indexRegister.classList.add("animate-flip-out");
+    setTimeout(() => {
+        indexRegister.style.display = "none";
+        indexRegister.classList.remove("animate-flip-out");
+        indexLogin.style.display = "grid";
+        indexLogin.classList.add("animate-flip");
+        setTimeout(() => {
+            indexLogin.classList.remove("animate-flip");
+        }, 160);
+    }, 160);
 }
 
 function openRegister() {
-    indexLogin.style.display = "none";
-    indexRegister.style.display = "grid";
+    clearFields();
+    indexLogin.classList.add("animate-flip-out");
+    setTimeout(() => {
+        indexLogin.style.display = "none";
+        indexLogin.classList.remove("animate-flip-out");
+        indexRegister.style.display = "grid";
+        indexRegister.classList.add("animate-flip");
+        setTimeout(() => {
+            indexRegister.classList.remove("animate-flip");
+        }, 160);
+    }, 160);
 }
 
 function register() {
-    const form = new FormData();
+    const form = new FormData(registerForm);
     axios
         .post("/register", form)
         .then((response) => {
-            // responseHandler(registerErrors, response);
+            notificationHandler(response.data.notifications);
+            setTimeout(() => {
+                openLogin();
+                if (response.data.notifications[0].user.username)
+                    document.getElementById("login-email").value =
+                        response.data.notifications[0].user.username;
+            }, 1000);
         })
         .catch((err) => {
             if (err.response)
@@ -34,7 +57,7 @@ function register() {
 }
 
 function login() {
-    const form = new FormData(document.getElementById("login-form"));
+    const form = new FormData(loginForm);
     axios
         .post("/login", form)
         .then((response) => {
@@ -48,24 +71,53 @@ function login() {
         });
 }
 
-function errorHandler(errors) {
-    if (!displayErrors) {
-        displayErrors = true;
+function errorHandler(errors, time = 4000) {
+    if (!displayInfo) {
+        displayInfo = true;
         const errorList = document.createElement("div");
         errorList.classList.add("error-list");
+        errorList.classList.add("animate-slide-down");
         errors.forEach((err) => {
             let elem = document.createElement("p");
             elem.classList.add("error");
             elem.textContent = err.msg;
             errorList.appendChild(elem);
         });
-        // TODO: de facut animatie pt slide up
         document.body.appendChild(errorList);
-        if (displayErrors)
+        if (displayInfo)
             setTimeout(() => {
-                document.body.removeChild(errorList);
-                displayErrors = false;
-            }, 4000);
+                errorList.classList.remove("animate-slide-down");
+                errorList.classList.add("animate-slide-up");
+                setTimeout(() => {
+                    document.body.removeChild(errorList);
+                    displayInfo = false;
+                }, 300);
+            }, time);
+    }
+}
+
+function notificationHandler(notif, time = 4000) {
+    if (!displayInfo) {
+        displayInfo = true;
+        const notifList = document.createElement("div");
+        notifList.classList.add("notification-list");
+        notifList.classList.add("animate-slide-down");
+        notif.forEach((n) => {
+            let elem = document.createElement("p");
+            elem.classList.add("notification");
+            elem.textContent = n.msg;
+            notifList.appendChild(elem);
+        });
+        document.body.appendChild(notifList);
+        if (displayInfo)
+            setTimeout(() => {
+                notifList.classList.remove("animate-slide-down");
+                notifList.classList.add("animate-slide-up");
+                setTimeout(() => {
+                    document.body.removeChild(notifList);
+                    displayInfo = false;
+                }, 300);
+            }, time);
     }
 }
 
@@ -84,4 +136,8 @@ function logout() {
                 alert(str);
             }
         });
+}
+
+function clearFields() {
+    document.querySelectorAll("input").forEach((input) => (input.value = ""));
 }
