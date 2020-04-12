@@ -135,7 +135,7 @@ function createUser(req, res, next) {
                 msg: `User created successfully.`,
                 user: user,
             };
-            return res.status(201).json(notif);
+            return res.status(201).json({ notifications: [notif] });
         }
         return res.status(500).json({
             errors: [
