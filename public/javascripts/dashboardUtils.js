@@ -302,8 +302,8 @@ function deleteCollection(ev) {
                 displayWorkspaceButtons(false);
                 resetDashboard();
                 modifyActiveNote(null);
-                notificationHandler([{ msg: "Collection deleted." }], 2000);
             }
+            notificationHandler([{ msg: "Collection deleted." }], 2000);
         })
         .catch((err) => {
             errorHandler([

@@ -49,6 +49,7 @@ function register() {
             }, 1000);
         })
         .catch((err) => {
+            clearFields("password");
             if (err.response)
                 errorHandler(
                     err.response.data.errors || [{ msg: "Server error." }]
@@ -64,6 +65,7 @@ function login() {
             window.location.pathname = response.data.redirectPath;
         })
         .catch((err) => {
+            clearFields("password");
             if (err.response)
                 errorHandler(
                     err.response.data.errors || [{ msg: "Server error." }]
@@ -138,6 +140,14 @@ function logout() {
         });
 }
 
-function clearFields() {
-    document.querySelectorAll("input").forEach((input) => (input.value = ""));
+function clearFields(fields) {
+    if (fields === "password") {
+        document.getElementById("password").value = "";
+        document.getElementById("login-password").value = "";
+        document.getElementById("confirm_password").value = "";
+    } else {
+        document
+            .querySelectorAll("input")
+            .forEach((input) => (input.value = ""));
+    }
 }
