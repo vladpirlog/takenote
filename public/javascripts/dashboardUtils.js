@@ -32,7 +32,7 @@ noteTitleField.addEventListener("keydown", limitTitleLength);
 function limitTitleLength(ev) {
     if (
         this.textContent.length >= 20 &&
-        ![8, 9, 37, 38, 39, 40].includes(ev.keyCode)
+        ![8, 9, 17, 37, 38, 39, 40, 46].includes(ev.keyCode)
     )
         ev.preventDefault();
 }
@@ -396,7 +396,6 @@ function addNoteToContainer(note, container) {
     containerElement.classList.add("animate");
     containerElement.classList.add("no-select");
     containerElement.textContent = note.title;
-    // containerElement.textContent = note.title.length > 10 ? note.title.slice(0, 10) + "..." : note.title;
     containerElement.onclick = getNote;
     container.appendChild(containerElement);
     return containerElement;
@@ -469,11 +468,25 @@ function copyContentToClipboard() {
 }
 
 function copyTextToClipboard(str) {
-    const el = document.createElement("textarea");
-    el.value = str;
+    const el = document.createElement("div");
+    el.contentEditable = "true";
+    el.appendChild(document.createTextNode(str));
     document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
+    if (document.body.createTextRange) {
+        let range = document.body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+        document.execCommand("Copy");
+        range = null;
+    } else if (window.getSelection) {
+        let selection = window.getSelection();
+        let range = document.createRange();
+        range.selectNodeContents(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("Copy");
+        selection.removeAllRanges();
+    }
     document.body.removeChild(el);
 }
 
