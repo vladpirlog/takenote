@@ -450,7 +450,6 @@ async function updateNote(req, res, next) {
         },
         { new: true }
     );
-
     if (newNote) {
         return res.status(200).json({
             status: 200,
@@ -529,8 +528,8 @@ function uploadFile(req, res, next) {
     if (file) {
         cloudinary.uploader
             .upload(file.tempFilePath)
-            .then(function (result) {
-                fs.unlink(file.tempFilePath, function (err) {
+            .then((result) => {
+                fs.unlink(file.tempFilePath, (err) => {
                     if (err) {
                         console.log(err);
                         result.msg = "Could not delete file.";
@@ -540,7 +539,7 @@ function uploadFile(req, res, next) {
                     next();
                 });
             })
-            .catch(function (err) {
+            .catch((err) => {
                 console.log(err);
                 return res.status(err.http_code).json(err);
             });

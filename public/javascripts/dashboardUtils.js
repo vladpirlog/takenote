@@ -14,20 +14,22 @@ const noteTitleField = document.getElementsByClassName("note-title-field")[0];
 // ============================= FUNCTIONS FOR FETCHING DATA/INTERACTING WITH THE BACKEND ===========================
 
 // Initialize dashboard
-window.onload = () => {
-    displayWorkspaceButtons(false);
-    sessionStorage.clear();
-};
-axios
-    .get("/api/user/collections?includeCollaborations=true")
-    .then(initializeDashboard)
-    .catch((err) => {
-        errorHandler([
-            { msg: err.response.data.msg || "There was a problem." },
-        ]);
-    });
+if (window.location.pathname === "/dashboard") {
+    window.onload = () => {
+        displayWorkspaceButtons(false);
+        sessionStorage.clear();
+    };
+    axios
+        .get("/api/user/collections?includeCollaborations=true")
+        .then(initializeDashboard)
+        .catch((err) => {
+            errorHandler([
+                { msg: err.response.data.msg || "There was a problem." },
+            ]);
+        });
 
-noteTitleField.addEventListener("keydown", limitTitleLength);
+    noteTitleField.addEventListener("keydown", limitTitleLength);
+}
 
 function limitTitleLength(ev) {
     if (
@@ -435,15 +437,13 @@ function saveToLoading(val) {
     if (val) {
         saveButton.innerHTML =
             '<i class="fas fa-spinner animate-rotation-clockwise"></i>';
-        saveButton.style.backgroundColor = getComputedStyle(
+        saveButton.style.background = getComputedStyle(
             document.body
         ).getPropertyValue("--info-color");
         saveButton.onclick = null;
     } else {
         saveButton.innerHTML = '<i class="fas fa-save"></i>';
-        saveButton.style.backgroundColor = getComputedStyle(
-            document.body
-        ).getPropertyValue("--success-color");
+        saveButton.style.background = null;
         saveButton.onclick = updateNote;
     }
 }

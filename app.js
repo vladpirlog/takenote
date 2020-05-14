@@ -12,15 +12,23 @@ const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
 const compression = require("compression");
 
+const app = express();
+app.set("env", process.env.NODE_ENV);
+
 mongoose
-    .connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(function () {
+    .connect(
+        app.get("env") === "production"
+            ? process.env.MONGODB_PRODUCTION_URI
+            : process.env.MONGODB_DEVELOPMENT_URI,
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        }
+    )
+    .then(() => {
         console.log("MongoDB connected...");
     })
-    .catch(function (err) {
+    .catch((err) => {
         console.log(err);
     });
 mongoose.set("useFindAndModify", false);
@@ -37,9 +45,6 @@ const logoutRouter = require("./routes/logout");
 const registerRouter = require("./routes/register");
 const dashboardRouter = require("./routes/dashboard");
 const apiRouter = require("./routes/api");
-
-const app = express();
-app.set("env", process.env.NODE_ENV);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -62,22 +67,23 @@ app.use(
 app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
 
 // Initialize res.locals.isAuthenticated and res.locals.loggedUser
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     if (req.cookies.jwt_auth) {
-        jwt.verify(req.cookies.jwt_auth, process.env.JWT_SECRET, function (
-            err,
-            decoded
-        ) {
-            if (err) return next(err);
-            if (decoded) {
-                res.locals.isAuthenticated = true;
-                res.locals.loggedUser = decoded;
-            } else {
-                res.locals.isAuthenticated = false;
-                res.locals.loggedUser = null;
+        jwt.verify(
+            req.cookies.jwt_auth,
+            process.env.JWT_SECRET,
+            (err, decoded) => {
+                if (err) return next(err);
+                if (decoded) {
+                    res.locals.isAuthenticated = true;
+                    res.locals.loggedUser = decoded;
+                } else {
+                    res.locals.isAuthenticated = false;
+                    res.locals.loggedUser = null;
+                }
+                return next();
             }
-            return next();
-        });
+        );
     } else {
         res.locals.isAuthenticated = false;
         res.locals.loggedUser = null;
@@ -94,12 +100,12 @@ const checkAuth = require("./config/checkAuth");
 app.use("/api", checkAuth, apiRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get("env") === "development" ? err : {};

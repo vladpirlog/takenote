@@ -11,10 +11,10 @@ block content
                 .dashboard-workspace-buttons
                     i.fas.fa-share-alt.no-select(onclick='shareNote();')
                     i.fas.fa-copy.no-select(onclick='copyContentToClipboard();')
-                    i.fas.fa-paperclip.no-select(onclick='viewAttachments();')
+                    i.fas.fa-paperclip.no-select(onclick='openAttachments();')
                     i.fas.fa-trash.no-select(onclick='deleteNote();')
                     .save-button.no-select(onclick='updateNote();')
                         i.fas.fa-save
             .dashboard-workspace-textarea-bg TakeNote
                 .dashboard-workspace-textarea.animate-focus(contenteditable='true' data-placeholder='...content' spellcheck='false')
-    script(src='javascripts/dashboardUtils.js')
+    include partials/photo_modal

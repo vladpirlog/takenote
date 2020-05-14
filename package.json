@@ -10,6 +10,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "uglifyjs .\\public\\javascripts\\dashboardUtils.js .\\public\\javascripts\\userUtils.js -o .\\public\\javascripts\\all.min.js -c && cleancss -o .\\public\\stylesheets\\style.min.css .\\public\\stylesheets\\style.css",
     "start": "node .\\bin\\www",
     "test": "nodemon .\\bin\\www"
   },
@@ -35,5 +36,9 @@
   },
   "engines": {
     "node": "12.x"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^4.3.0",
+    "uglify-es": "^3.3.9"
   }
 }
