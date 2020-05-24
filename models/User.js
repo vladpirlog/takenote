@@ -1,32 +1,44 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true
+        required: true,
     },
     email: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     salt: {
         type: String,
-        required: true
+        required: true,
     },
     created: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+    },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+    verificationLink: {
+        type: String,
+        required: false,
+    },
 });
 
 UserSchema.methods.validPassword = function (password) {
-    return (this.password === password);
+    return this.password === password;
 };
 
-const User = mongoose.model('User', UserSchema);
+UserSchema.methods.isVerified = function () {
+    return this.verified;
+};
+
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

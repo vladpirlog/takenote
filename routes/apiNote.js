@@ -6,265 +6,9 @@ const User = require("../models/User");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 const randomString = require("randomstring");
-// TODO: de adaugat functii pt a reduce codul duplicat
-// TODO: de adugat autorizarea pt note la care esti colaborator
-
-// GET all collections of a user; collaborating notes can be included too
-router.get("/user/collections", getAllCollections);
-
-function getAllCollections(req, res, next) {
-    const { includeCollaborations } = req.query;
-    Collection.find(
-        {
-            userID: res.locals.loggedUser.userID,
-        },
-        (err, collections) => {
-            if (err) {
-                return res
-                    .status(500)
-                    .json({ status: 500, msg: "Server error." });
-            }
-            if (collections) {
-                collections = JSON.parse(JSON.stringify(collections)); // altfel nu pot adauga key-uri noi la obiectul collections
-                collections.forEach((col) => (col.notes = []));
-
-                Note.find(
-                    { userID: res.locals.loggedUser.userID },
-                    (err, notes) => {
-                        if (err) {
-                            return res.status(500).json({
-                                status: 500,
-                                message: "Server error.",
-                            });
-                        }
-                        if (notes) {
-                            notes.forEach((n) => {
-                                for (let col of collections) {
-                                    if (col._id.toString() == n.collectionID) {
-                                        col.notes.push(n);
-                                        break;
-                                    }
-                                }
-                            });
-                            let response = {
-                                status: 200,
-                                msg: "OK",
-                                collections: collections,
-                            };
-                            // TODO: de adaugat un query pt gasirea notelor la care user-ul colaboreaza
-                            // Note.find(
-                            //         {
-                            //             collaborators: res.locals.loggedUser.username,
-                            //         },
-                            //         (err, collabNotes) => {
-                            //             if (err)
-                            //                 return res.status(500).json({
-                            //                     status: 500,
-                            //                     message: "Server error.",
-                            //                 });
-                            //             response.collaborations = collabNotes;
-                            //             return res.status(200).json(response);
-                            //         }
-                            //     );
-                            return res.status(200).json(response);
-                        } else {
-                            return res
-                                .status(404)
-                                .json({ status: 404, msg: "Notes not found." });
-                        }
-                    }
-                );
-            } else {
-                return res
-                    .status(404)
-                    .json({ status: 404, msg: "Collections not found." });
-            }
-        }
-    );
-}
-
-// GET a collection
-router.get("/collection/:collectionTitle", getCollection);
-
-async function getCollection(req, res, next) {
-    const { collectionTitle } = req.params;
-    if (!collectionTitle) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data missing.",
-        });
-    }
-
-    if (!checkRegex(collectionTitle)) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data contains unaccepted characters.",
-        });
-    }
-
-    let collection = await Collection.findOne({
-        title: collectionTitle,
-        userID: res.locals.loggedUser.userID,
-    });
-
-    if (!collection) {
-        return res.status(404).json({
-            status: 404,
-            msg: "Collection name invalid.",
-        });
-    }
-
-    const notes = await Note.find({
-        collectionID: collection._id.toString(),
-        userID: res.locals.loggedUser.userID,
-    });
-    collection = JSON.parse(JSON.stringify(collection)); // altfel nu pot adauga alte key-uri la obiectul collection
-    collection.notes = notes;
-
-    return res.status(200).json({
-        status: 200,
-        msg: "OK",
-        collection: collection,
-    });
-}
-
-// ADD a collection
-router.post("/collection/add", addCollection);
-
-async function addCollection(req, res, next) {
-    const { collectionTitle } = req.body;
-    if (!collectionTitle) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data missing.",
-        });
-    }
-
-    if (!checkRegex(collectionTitle)) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data contains unaccepted characters.",
-        });
-    }
-
-    const newCollection = new Collection({
-        title: collectionTitle,
-        userID: res.locals.loggedUser.userID,
-    });
-
-    const collection = await Collection.findOne({
-        title: collectionTitle,
-        userID: res.locals.loggedUser.userID,
-    });
-
-    if (collection) {
-        return res.status(409).json({
-            status: 409,
-            msg: "A collection with that name already exists.",
-        });
-    }
-
-    newCollection.save(function (err, collection) {
-        if (err) return next(err);
-        if (collection) {
-            return res.status(201).json({
-                status: 201,
-                msg: "Collection created.",
-                collection: collection,
-            });
-        }
-        return res.status(500).json({
-            status: 500,
-            msg: "Could not create collection.",
-        });
-    });
-}
-
-// UPDATE a collection
-router.post("/collection/update", updateCollection);
-
-async function updateCollection(req, res, next) {
-    const { collectionTitle, newCollectionTitle } = req.body;
-    if (!collectionTitle || !newCollectionTitle) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data missing.",
-        });
-    }
-
-    if (!checkRegex(collectionTitle, newCollectionTitle)) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data contains unaccepted characters.",
-        });
-    }
-
-    const newCollection = await Collection.findOneAndUpdate(
-        { title: collectionTitle, userID: res.locals.loggedUser.userID },
-        { title: newCollectionTitle },
-        { new: true }
-    );
-
-    if (newCollection) {
-        return res.status(200).json({
-            status: 200,
-            msg: "Collection updated.",
-            collection: newCollection,
-        });
-    } else
-        return res.status(404).json({
-            status: 404,
-            msg: "Could not update collection.",
-        });
-}
-
-// DELETE a collection
-router.post("/collection/delete", deleteCollection);
-
-async function deleteCollection(req, res, next) {
-    const { collectionTitle } = req.body;
-
-    if (!collectionTitle) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data missing.",
-        });
-    }
-
-    if (!checkRegex(collectionTitle)) {
-        return res.status(422).json({
-            status: 422,
-            msg: "Input data contains unaccepted characters.",
-        });
-    }
-
-    const collection = await Collection.findOneAndDelete({
-        title: collectionTitle,
-        userID: res.locals.loggedUser.userID,
-    });
-
-    if (collection) {
-        // Also delete all notes in that collection
-        const notes = await Note.deleteMany({
-            collectionID: collection._id.toString(),
-            userID: res.locals.loggedUser.userID,
-        });
-
-        return res.status(200).json({
-            status: 200,
-            msg: "Collection deleted.",
-            collection: collection,
-        });
-    } else {
-        return res.status(404).json({
-            status: 404,
-            msg: "Could not delete collection.",
-        });
-    }
-}
 
 // GET a note
-router.get("/note/:collectionTitle/:noteTitle", getNote);
+router.get("/:collectionTitle/:noteTitle", getNote);
 
 async function getNote(req, res, next) {
     const { noteTitle, collectionTitle } = req.params;
@@ -314,7 +58,7 @@ async function getNote(req, res, next) {
 }
 
 // ADD a note
-router.post("/note/add", addNote);
+router.post("/add", addNote);
 
 async function addNote(req, res, next) {
     const { noteTitle, noteContent, collectionTitle } = req.body;
@@ -387,7 +131,7 @@ async function addNote(req, res, next) {
 }
 
 // UPDATE a note
-router.post("/note/update", updateNote);
+router.post("/update", updateNote);
 
 async function updateNote(req, res, next) {
     let { noteTitle, collectionTitle, newNoteTitle, newNoteContent } = req.body;
@@ -464,7 +208,7 @@ async function updateNote(req, res, next) {
 }
 
 // DELETE a note
-router.post("/note/delete", deleteNote);
+router.post("/delete", deleteNote);
 
 async function deleteNote(req, res, next) {
     let { noteTitle, collectionTitle } = req.body;
@@ -521,7 +265,7 @@ async function deleteNote(req, res, next) {
 }
 
 // ADD an attachment
-router.post("/note/attachment/add", uploadFile, addAttachment);
+router.post("/attachment/add", uploadFile, addAttachment);
 
 function uploadFile(req, res, next) {
     const file = req.files.photo;
@@ -529,19 +273,16 @@ function uploadFile(req, res, next) {
         cloudinary.uploader
             .upload(file.tempFilePath)
             .then((result) => {
-                fs.unlink(file.tempFilePath, (err) => {
-                    if (err) {
-                        console.log(err);
-                        result.msg = "Could not delete file.";
-                    }
-                    result.status = 200;
-                    res.photoURL = result.secure_url;
-                    next();
-                });
+                console.log(file.tempFilePath);
+                fs.unlinkSync(file.tempFilePath);
+                result.status = 200;
+                res.photoURL = result.secure_url;
+                next();
             })
             .catch((err) => {
-                console.log(err);
-                return res.status(err.http_code).json(err);
+                return res
+                    .status(err.http_code)
+                    .json({ msg: err.message, status: err.http_code });
             });
     } else
         return res.status(422).json({
@@ -631,7 +372,7 @@ async function addAttachment(req, res, next) {
 }
 
 // DELETE an attachment
-router.post("/note/attachment/delete", deleteAttachment);
+router.post("/attachment/delete", deleteAttachment);
 
 async function deleteAttachment(req, res, next) {
     let { noteTitle, collectionTitle, photoURL } = req.body;
@@ -720,7 +461,7 @@ async function deleteAttachment(req, res, next) {
 }
 
 // ADD a collaborator
-router.post("/note/collaborator/add", addCollaborator);
+router.post("/collaborator/add", addCollaborator);
 
 // TODO: de adaugat o limita pt numarul maxim de colaboratori la o nota (~5)
 async function addCollaborator(req, res, next) {
@@ -826,7 +567,7 @@ async function addCollaborator(req, res, next) {
 }
 
 // DELETE a collaborator
-router.post("/note/collaborator/delete", deleteCollaborator);
+router.post("/collaborator/delete", deleteCollaborator);
 
 async function deleteCollaborator(req, res, next) {
     let { noteTitle, collectionTitle, collaboratorUsername } = req.body;
@@ -923,7 +664,7 @@ async function deleteCollaborator(req, res, next) {
     }
 }
 
-router.post("/note/share", getShareLink);
+router.post("/share", getShareLink);
 
 async function getShareLink(req, res, next) {
     const { noteTitle, collectionTitle } = req.body;

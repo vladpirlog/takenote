@@ -39,7 +39,7 @@ addAttachment.onchange = (ev) => {
             addImageToModal(response.data.photoURL);
         })
         .catch((err) => {
-            alert(err.response || "There was a problem.");
+            alert(err.response.data.msg || "There was a problem.");
         });
 };
 
@@ -61,7 +61,7 @@ function deleteAttachment(elem, photoURL) {
             removeImageFromModal(elem.parentElement);
         })
         .catch((err) => {
-            alert(err.response || "There was a problem.");
+            alert(err.response.data.msg || "There was a problem.");
         });
 }
 

@@ -4,6 +4,8 @@ const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
 const sha256 = require("sha256");
 const randomString = require("randomstring");
+const nodemailer = require("nodemailer");
+const url = require("url");
 
 // GET register page -> nu mai este pagina separata
 // router.get('/', function (req, res, next) {
@@ -117,35 +119,84 @@ function createUser(req, res, next) {
 
     const salt = randomString.generate(10);
     const hash = sha256(salt + password);
+    const verificationLink = "/confirm/" + randomString.generate(24);
     const newUser = new User({
         username: username,
         email: email,
         password: hash,
         salt: salt,
+        verificationLink: verificationLink,
     });
 
     newUser.save((err, user) => {
         if (err) {
-            return next(err);
+            return res.status(500).json({
+                errors: [
+                    {
+                        status: 500,
+                        location: "body",
+                        msg: "Could not create user.",
+                    },
+                ],
+            });
         }
         if (user) {
-            let notif = {
-                status: 201,
-                redirectPath: "/",
-                msg: `User created successfully.`,
-                user: user,
-            };
-            return res.status(201).json({ notifications: [notif] });
-        }
-        return res.status(500).json({
-            errors: [
-                {
-                    status: 500,
-                    location: "body",
-                    msg: "Could not create user.",
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS,
                 },
-            ],
-        });
+                tls: {
+                    rejectUnauthorized: false,
+                },
+            });
+            const completeURL = url.format({
+                protocol: req.protocol,
+                host: req.get("host"),
+                pathname: user.verificationLink,
+            });
+            transporter.sendMail(
+                {
+                    from: `"TakeNote" ${process.env.EMAIL_USER}`,
+                    to: user.email,
+                    subject: `TakeNote Account Confirmation - ${user.username}`,
+                    text: `Go to this URL to confirm your account: ${completeURL}`,
+                    html: `<h3>Click the button below to confirm your TakeNote account</h3><button><a href=${completeURL} target="_blank">Confirm</a></button><p>Button not working? Go to this URL: ${completeURL}</p>`,
+                    // TODO: de creat un template pt email-ul de confirmare
+                },
+                (err, info) => {
+                    if (err) {
+                        return res.status(500).json({
+                            errors: [
+                                {
+                                    status: 500,
+                                    location: "body",
+                                    msg: "Could not create user.",
+                                },
+                            ],
+                        });
+                    }
+                    let notif = {
+                        status: 201,
+                        redirectPath: "/",
+                        msg: `Check your inbox for the confirmation link.`,
+                        user: user,
+                    };
+                    return res.status(201).json({ notifications: [notif] });
+                }
+            );
+        } else
+            return res.status(500).json({
+                errors: [
+                    {
+                        status: 500,
+                        location: "body",
+                        msg: "Could not create user.",
+                    },
+                ],
+            });
     });
 }
 

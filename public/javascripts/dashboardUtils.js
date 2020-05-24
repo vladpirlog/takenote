@@ -28,6 +28,16 @@ if (window.location.pathname === "/dashboard") {
             ]);
         });
 
+    window.onkeydown = (ev) => {
+        if (
+            ev.keyCode === 83 &&
+            (navigator.platform.match("Mac") ? ev.metaKey : ev.ctrlKey)
+        ) {
+            ev.preventDefault();
+            updateNote();
+        }
+    };
+
     noteTitleField.addEventListener("keydown", limitTitleLength);
 }
 

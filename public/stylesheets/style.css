@@ -55,6 +55,7 @@ input {
     margin: 0.25rem 0;
     font-family: var(--font-family);
     font-size: var(--font-size-small);
+    border-radius: var(--border-radius-small);
 }
 
 /* NAVBAR */
@@ -260,6 +261,10 @@ input {
     max-height: 40rem;
 }
 
+.index-info > *:first-child {
+    font-size: var(--font-size-larger);
+}
+
 .index-info-buttons {
     display: flex;
     flex-direction: column;
@@ -395,6 +400,19 @@ input {
 }
 
 .sidebar-tools {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0.75rem;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    color: var(--light-color);
+    border-radius: var(--border-radius-medium);
+    background: var(--secondary-color);
+}
+
+.sidebar-tools-plus {
     text-align: center;
     background: var(--success-color);
     background: linear-gradient(
@@ -402,9 +420,13 @@ input {
         var(--success-color) 0%,
         var(--success-color-dark) 100%
     );
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
     cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-medium);
+}
+
+.sidebar-tools > input {
+    width: 70%;
 }
 
 .sidebar-container-heading {
@@ -554,8 +576,8 @@ input {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     z-index: 4;
     display: none;
@@ -630,11 +652,11 @@ input[type="file"] {
 }
 
 .animate {
-    animation: animatezoom 0.3s forwards;
+    animation: animatezoom 0.4s forwards;
 }
 
 .animate-out {
-    animation: animatezoomout 0.3s forwards;
+    animation: animatezoomout 0.4s forwards;
 }
 
 .animate-focus {
@@ -757,7 +779,7 @@ input[type="file"] {
         background: var(--success-color-dark);
     }
 
-    .sidebar-tools:hover {
+    .sidebar-tools-plus:hover {
         background: var(--success-color-dark);
     }
 
@@ -805,19 +827,23 @@ input[type="file"] {
 
 @keyframes animatezoom {
     from {
-        transform: scale(0);
+        /* transform: scale(0); */
+        opacity: 0;
     }
     to {
-        transform: scale(1);
+        /* transform: scale(1); */
+        opacity: 1;
     }
 }
 
 @keyframes animatezoomout {
     from {
-        transform: scale(1);
+        /* transform: scale(1); */
+        opacity: 1;
     }
     to {
-        transform: scale(0);
+        /* transform: scale(0); */
+        opacity: 0;
     }
 }
 

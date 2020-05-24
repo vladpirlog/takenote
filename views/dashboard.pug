@@ -3,8 +3,9 @@ extends layout
 block content
     .dashboard-content
         .sidebar
-            .sidebar-tools.sidebar-container.no-select(onclick='addCollection();')
-                i.fas.fa-plus
+            .sidebar-tools
+                input#search-field(type="text" placeholder!="Search &#x1F50D;")
+                i.fas.fa-plus.sidebar-tools-plus.no-select(onclick='addCollection();')
         .dashboard-workspace
             .dashboard-workspace-tools
                 .note-title-field.animate-focus(contenteditable='true' data-placeholder='Title' spellcheck='false')

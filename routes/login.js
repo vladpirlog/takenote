@@ -74,15 +74,29 @@ function authUser(req, res, next) {
                 });
             }
             let hash = sha256(user.salt + password);
-            if (user.password === hash) {
+            if (!user.isVerified()) {
+                return res.status(409).json({
+                    errors: [
+                        {
+                            status: 409,
+                            msg: "Confirm your account before logging in.",
+                        },
+                    ],
+                });
+            }
+            if (user.validPassword(hash)) {
                 const token = jwt.sign(
-                    { userID: user._id.toString(), username: user.username },
+                    {
+                        userID: user._id.toString(),
+                        username: user.username,
+                    },
                     process.env.JWT_SECRET,
                     { expiresIn: "2h" }
                 );
                 res.cookie("jwt_auth", token, {
                     expires: new Date(Date.now() + 7200000),
                     httpOnly: true,
+                    sameSite: "Strict",
                 });
                 return res.status(200).json({
                     redirectPath: "/dashboard",

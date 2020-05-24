@@ -44,7 +44,9 @@ const loginRouter = require("./routes/login");
 const logoutRouter = require("./routes/logout");
 const registerRouter = require("./routes/register");
 const dashboardRouter = require("./routes/dashboard");
-const apiRouter = require("./routes/api");
+const apiUserRouter = require("./routes/apiUser");
+const apiCollectionRouter = require("./routes/apiCollection");
+const apiNoteRouter = require("./routes/apiNote");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -97,7 +99,9 @@ app.use("/logout", logoutRouter);
 app.use("/register", registerRouter);
 app.use("/dashboard", dashboardRouter);
 const checkAuth = require("./config/checkAuth");
-app.use("/api", checkAuth, apiRouter);
+app.use("/api/user", checkAuth, apiUserRouter);
+app.use("/api/collection", checkAuth, apiCollectionRouter);
+app.use("/api/note", checkAuth, apiNoteRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
