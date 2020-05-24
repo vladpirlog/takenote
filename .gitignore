@@ -6,6 +6,9 @@ proiect-tw.iml
 # Testing files
 *.rest
 
+# Minified files
+*.min.*
+
 # Logs
 logs
 *.log
