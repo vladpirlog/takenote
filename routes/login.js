@@ -4,11 +4,6 @@ const User = require("../models/User");
 const sha256 = require("sha256");
 const jwt = require("jsonwebtoken");
 
-// GET login page -> nu mai este pagina separata
-// router.get('/', function (req, res, next) {
-//     return res.render('login', {title: 'Login'});
-// });
-
 // Login handler
 router.post("/", checkSanitized, authUser);
 

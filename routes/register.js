@@ -7,11 +7,6 @@ const randomString = require("randomstring");
 const nodemailer = require("nodemailer");
 const url = require("url");
 
-// GET register page -> nu mai este pagina separata
-// router.get('/', function (req, res, next) {
-//     return res.render('register', {title: 'Register'});
-// });
-
 const validationRequirements = [
     check(
         "username",
@@ -96,7 +91,14 @@ function checkUnique(req, res, next) {
         { $or: [{ email: email }, { username: username }] },
         (err, user) => {
             if (err) {
-                return next(err);
+                return res.status(500).json({
+                    errors: [
+                        {
+                            status: 500,
+                            msg: "Server error.",
+                        },
+                    ],
+                });
             }
             if (user) {
                 return res.status(422).json({

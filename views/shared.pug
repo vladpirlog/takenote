@@ -1,0 +1,34 @@
+extends layout
+
+block content
+    .shared
+        .shared-card-left
+            .shared-card-note
+                .shared-card-note-header
+                    .shared-card-note-title= note.title
+                    i.fas.fa-copy.no-select(onclick='copySharedToClipboard();')
+                    i.fas.fa-paperclip(onclick=`openSharedAttachments('${note.attachments}');`)
+                .shared-card-note-content= note.content
+            .shared-card-info
+                div="by " + owner.username
+                div= "created at " + note.created.toLocaleDateString() + ". last modified at " + note.edited.toLocaleDateString()
+        .shared-card-right
+            if isAuthenticated
+                .share-card-loggedin-text= 'Hello, ' + loggedUser.username + '!'
+                a.share-card-loggedin-button(href='/dashboard') Dashboard
+                .share-card-loggedin-button-logout(onclick='logout();') Logout
+            else
+                .shared-card-signup-text
+                    | Not yet on TakeNote?
+                    br
+                    br
+                    | Join now.
+                    br
+                    br
+                    | 100% free.
+                .shared-card-signup-button.bttn(onclick="window.location.pathname = '/';") SIGN ME UP
+    .photo-modal-background.animate
+        .photo-modal.animate
+            .photo-modal-header Note Attachments
+            .photo-modal-content
+            .photo-modal-footer

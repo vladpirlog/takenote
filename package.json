@@ -10,7 +10,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "uglifyjs .\\public\\javascripts\\dashboardUtils.js .\\public\\javascripts\\userUtils.js .\\public\\javascripts\\fileUtils.js .\\public\\javascripts\\feedbackUtils.js -o .\\public\\javascripts\\all.min.js -c && cleancss -o .\\public\\stylesheets\\style.min.css .\\public\\stylesheets\\style.css",
+    "build": "uglifyjs .\\public\\javascripts\\dashboardUtils.js .\\public\\javascripts\\userUtils.js .\\public\\javascripts\\fileUtils.js .\\public\\javascripts\\feedbackUtils.js .\\public\\javascripts\\sharedUtils.js -o .\\public\\javascripts\\all.min.js -c && cleancss -o .\\public\\stylesheets\\style.min.css .\\public\\stylesheets\\style.css",
     "start": "node .\\bin\\www",
     "test": "nodemon .\\bin\\www"
   },
@@ -41,6 +41,7 @@
   "devDependencies": {
     "clean-css-cli": "^4.3.0",
     "nodemon": "^2.0.4",
-    "uglify-es": "^3.3.9"
+    "uglify-es": "^3.3.9",
+    "webpack": "^4.43.0"
   }
 }

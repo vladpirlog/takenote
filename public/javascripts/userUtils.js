@@ -7,6 +7,16 @@ let displayInfo = false;
 const indexRegister = document.getElementsByClassName("index-register")[0];
 const indexLogin = document.getElementsByClassName("index-login")[0];
 
+if (window.location.pathname === "/") {
+    window.onkeydown = (ev) => {
+        if (ev.keyCode === 13) {
+            if (openCard() === "register") register();
+            else if (openCard() === "login") login();
+            ev.preventDefault();
+        }
+    };
+}
+
 function openLogin() {
     clearFields();
     indexRegister.classList.add("animate-flip-out");
@@ -149,5 +159,13 @@ function clearFields(fields) {
         document
             .querySelectorAll("input")
             .forEach((input) => (input.value = ""));
+    }
+}
+
+function openCard() {
+    if (indexLogin) {
+        if (!indexLogin.style.display || indexLogin.style.display === "none")
+            return "register";
+        else return "login";
     }
 }

@@ -35,6 +35,12 @@ if (window.location.pathname === "/dashboard") {
         ) {
             ev.preventDefault();
             updateNote();
+        } else if (
+            ev.keyCode === 67 &&
+            (navigator.platform.match("Mac") ? ev.metaKey : ev.ctrlKey)
+        ) {
+            ev.preventDefault();
+            copyContentToClipboard();
         }
     };
 

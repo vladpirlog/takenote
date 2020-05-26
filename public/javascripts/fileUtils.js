@@ -9,39 +9,41 @@ const addAttachment = document.getElementsByClassName(
 )[0];
 let currentNote;
 
-photoModalBackground.onclick = (ev) => {
-    if (ev.target == photoModalBackground) closeAttachments();
-};
+if (window.location.pathname === "/dashboard") {
+    photoModalBackground.onclick = (ev) => {
+        if (ev.target == photoModalBackground) closeAttachments();
+    };
 
-document.onkeydown = (ev) => {
-    if (ev.keyCode === 27 && photoModalBackground.style.display) {
-        ev.preventDefault();
-        closeAttachments();
-    }
-};
+    document.onkeydown = (ev) => {
+        if (ev.keyCode === 27 && photoModalBackground.style.display) {
+            ev.preventDefault();
+            closeAttachments();
+        }
+    };
 
-addAttachment.onchange = (ev) => {
-    const photo = ev.target.files[0];
-    const form = new FormData();
-    currentNote = JSON.parse(sessionStorage.getItem("currentNote"));
-    form.append("noteTitle", currentNote.title);
-    form.append("collectionTitle", currentNote.collectionTitle);
-    form.append("photo", photo);
+    addAttachment.onchange = (ev) => {
+        const photo = ev.target.files[0];
+        const form = new FormData();
+        currentNote = JSON.parse(sessionStorage.getItem("currentNote"));
+        form.append("noteTitle", currentNote.title);
+        form.append("collectionTitle", currentNote.collectionTitle);
+        form.append("photo", photo);
 
-    axios
-        .post("/api/note/attachment/add", form)
-        .then((response) => {
-            notificationHandler([{ msg: "Attachment added." }], 2000);
-            sessionStorage.setItem(
-                "currentNote",
-                JSON.stringify(response.data.note)
-            );
-            addImageToModal(response.data.photoURL);
-        })
-        .catch((err) => {
-            alert(err.response.data.msg || "There was a problem.");
-        });
-};
+        axios
+            .post("/api/note/attachment/add", form)
+            .then((response) => {
+                notificationHandler([{ msg: "Attachment added." }], 2000);
+                sessionStorage.setItem(
+                    "currentNote",
+                    JSON.stringify(response.data.note)
+                );
+                addImageToModal(response.data.photoURL);
+            })
+            .catch((err) => {
+                alert(err.response.data.msg || "There was a problem.");
+            });
+    };
+}
 
 function deleteAttachment(elem, photoURL) {
     const form = new FormData();
