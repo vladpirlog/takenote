@@ -7,7 +7,7 @@ block content
                 .shared-card-note-header
                     .shared-card-note-title= note.title
                     i.fas.fa-copy.no-select(onclick='copySharedToClipboard();')
-                    i.fas.fa-paperclip(onclick=`openSharedAttachments('${note.attachments}');`)
+                    i.fas.fa-paperclip(onclick=`openSharedAttachments('${JSON.stringify(note.attachments)}');`)
                 .shared-card-note-content= note.content
             .shared-card-info
                 div="by " + owner.username

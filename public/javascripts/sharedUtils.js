@@ -18,19 +18,20 @@ if (window.location.pathname.includes("/share/")) {
     sharedCardNoteTitle.onclick = sharedCardNoteContent.onclick = (ev) => {
         errorHandler([{ msg: "You can only view the note." }]);
     };
-    window.onkeydown = (ev) => {
-        if (
-            ev.keyCode === 67 &&
-            (navigator.platform.match("Mac") ? ev.metaKey : ev.ctrlKey)
-        ) {
-            ev.preventDefault();
-            copySharedToClipboard();
-        }
-    };
+    // window.onkeydown = (ev) => {
+    //     if (
+    //         ev.keyCode === 67 &&
+    //         (navigator.platform.match("Mac") ? ev.metaKey : ev.ctrlKey)
+    //     ) {
+    //         ev.preventDefault();
+    //         copySharedToClipboard();
+    //     }
+    // };
 }
 
-function openSharedAttachments(urls) {
+function openSharedAttachments(text) {
     photoModalBackground.style.display = "flex";
+    const urls = JSON.parse(text);
     if (urls && urls.length > 0) {
         urls.forEach(addImageToModal);
     } else {
