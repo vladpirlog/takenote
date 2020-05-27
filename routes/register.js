@@ -49,7 +49,7 @@ function checkSanitized(req, res, next) {
     if (username !== req.sanitize(username)) {
         errors.push({
             status: 422,
-            loaction: "username",
+            location: "username",
             msg: "Username is invalid.",
         });
     }
@@ -57,7 +57,7 @@ function checkSanitized(req, res, next) {
     if (email !== req.sanitize(email)) {
         errors.push({
             status: 422,
-            loaction: "email",
+            location: "email",
             msg: "Email is invalid.",
         });
     }
@@ -65,7 +65,7 @@ function checkSanitized(req, res, next) {
     if (password !== req.sanitize(password)) {
         errors.push({
             status: 422,
-            loaction: "password",
+            location: "password",
             msg: "Password is invalid.",
         });
     }

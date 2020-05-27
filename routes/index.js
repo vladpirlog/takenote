@@ -12,7 +12,6 @@ router.get("/", (req, res, next) => {
 router.get("/share/:str", async (req, res, next) => {
     const str = req.sanitize(req.params.str);
     const link = "/share/" + str;
-    // TODO: de construit o pagina pt afisarea notelor share-uite
     const note = await Note.findOne({ link: link });
     if (!note) {
         return next(new Error("Not Found."));
