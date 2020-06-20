@@ -23,23 +23,19 @@ if (window.location.pathname === "/dashboard")
                     .querySelector(".sidebar-container-heading")
                     .textContent.trim()
                     .toLowerCase();
-                if (regex.test(collectionTitle)) {
-                    continue;
-                } else {
+                if (regex.test(collectionTitle)) continue;
+                else {
                     let ok = false;
                     for (let element of container.querySelectorAll(
                         ".sidebar-container-element"
                     )) {
-                        const noteTitle = element.textContent.trim();
-                        if (regex.test(noteTitle)) {
-                            ok = true;
-                        } else {
-                            element.style.display = "none";
-                        }
+                        const noteTitle = element.textContent
+                            .trim()
+                            .toLowerCase();
+                        if (regex.test(noteTitle)) ok = true;
+                        else element.style.display = "none";
                     }
-                    if (!ok) {
-                        container.style.display = "none";
-                    }
+                    if (!ok) container.style.display = "none";
                 }
             }
         }

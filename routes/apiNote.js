@@ -273,11 +273,10 @@ function uploadFile(req, res, next) {
         cloudinary.uploader
             .upload(file.tempFilePath)
             .then((result) => {
-                console.log(file.tempFilePath);
                 fs.unlinkSync(file.tempFilePath);
                 result.status = 200;
                 res.photoURL = result.secure_url;
-                next();
+                return next();
             })
             .catch((err) => {
                 return res

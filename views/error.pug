@@ -1,6 +1,10 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  div(style="text-align: center;")
+    h1(style="text-transform: capitalize;")= (message ? message : "") + " :("
+    h2= "Error " + (error.status ? error.status : 500)
+    span="Nothing to see here... Want to "  
+      a(href="/") go back home
+    span ?
+  //- pre #{error.stack}

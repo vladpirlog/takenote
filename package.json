@@ -10,9 +10,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "uglifyjs .\\public\\javascripts\\dashboardUtils.js .\\public\\javascripts\\userUtils.js .\\public\\javascripts\\fileUtils.js .\\public\\javascripts\\feedbackUtils.js .\\public\\javascripts\\sharedUtils.js -o .\\public\\javascripts\\all.min.js -c && cleancss -o .\\public\\stylesheets\\style.min.css .\\public\\stylesheets\\style.css",
-    "start": "node .\\bin\\www",
-    "test": "nodemon .\\bin\\www"
+    "build": "uglifyjs ./public/javascripts/dashboardUtils.js ./public/javascripts/userUtils.js ./public/javascripts/fileUtils.js ./public/javascripts/feedbackUtils.js ./public/javascripts/sharedUtils.js -o ./public/javascripts/all.min.js -c && cleancss -o ./public/stylesheets/style.min.css ./public/stylesheets/style.css",
+    "start": "node ./bin/www",
+    "start:dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "axios": "^0.19.2",

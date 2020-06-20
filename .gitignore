@@ -1,10 +1,6 @@
 # IDE folders
-proiect-tw.iml
 .idea/
 .vscode/
-
-# Testing files
-*.rest
 
 # Minified files
 *.min.*

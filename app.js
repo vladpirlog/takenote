@@ -16,22 +16,13 @@ const app = express();
 app.set("env", process.env.NODE_ENV);
 
 mongoose
-    .connect(
-        app.get("env") === "production"
-            ? process.env.MONGODB_PRODUCTION_URI
-            : process.env.MONGODB_DEVELOPMENT_URI,
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        }
-    )
-    .then(() => {
-        console.log("MongoDB connected...");
+    .connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
     })
-    .catch((err) => {
-        console.log(err);
-    });
-mongoose.set("useFindAndModify", false);
+    .then(() => console.log("MongoDB connected..."))
+    .catch((err) => console.log(err));
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -75,7 +66,10 @@ app.use((req, res, next) => {
             req.cookies.jwt_auth,
             process.env.JWT_SECRET,
             (err, decoded) => {
-                if (err) return next(err);
+                if (err) {
+                    res.clearCookie("jwt_auth");
+                    return next(err);
+                }
                 if (decoded) {
                     res.locals.isAuthenticated = true;
                     res.locals.loggedUser = decoded;
