@@ -60,32 +60,8 @@ app.use(
 app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
 
 // Initialize res.locals.isAuthenticated and res.locals.loggedUser
-app.use((req, res, next) => {
-    if (req.cookies.jwt_auth) {
-        jwt.verify(
-            req.cookies.jwt_auth,
-            process.env.JWT_SECRET,
-            (err, decoded) => {
-                if (err) {
-                    res.clearCookie("jwt_auth");
-                    return next(err);
-                }
-                if (decoded) {
-                    res.locals.isAuthenticated = true;
-                    res.locals.loggedUser = decoded;
-                } else {
-                    res.locals.isAuthenticated = false;
-                    res.locals.loggedUser = null;
-                }
-                return next();
-            }
-        );
-    } else {
-        res.locals.isAuthenticated = false;
-        res.locals.loggedUser = null;
-        return next();
-    }
-});
+const getLoggedUser = require("./config/getLoggedUser");
+app.use(getLoggedUser);
 
 app.use("/", indexRouter);
 app.use("/login", loginRouter);
