@@ -11,7 +11,7 @@ block content
                 .shared-card-note-content= note.content
             .shared-card-info
                 div="by " + owner.username
-                div= "created at " + note.created.toLocaleDateString() + ". last modified at " + note.edited.toLocaleDateString()
+                div= "created on " + note.created.toLocaleDateString() + ". last modified on " + note.edited.toLocaleDateString()
         .shared-card-right
             if isAuthenticated
                 .share-card-loggedin-text= 'Hello, ' + loggedUser.username + '!'
